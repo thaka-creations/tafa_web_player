@@ -50,3 +50,17 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"message": "Error decrypting file"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "File decrypted successfully"}, status=status.HTTP_200_OK)
 
+    @action(
+        methods=['POST'],
+        detail=False,
+        url_path='add-watermark',
+        url_name='add-watermark'
+    )
+    def add_watermark(self, request):
+        # add watermark
+        resp = utils.add_watermark()
+        if not resp:
+            return Response({"message": "Error adding watermark"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Watermark added successfully"}, status=status.HTTP_200_OK)
+
+
