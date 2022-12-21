@@ -5,21 +5,6 @@ from cryptography.fernet import Fernet
 def keygen():
     try:
         key = Fernet.generate_key()
-
-        # string the key in a file
-        with open('file.key', 'wb') as file_key:
-            file_key.write(key)
-        return True
-    except Exception as e:
-        print(e)
-        return False
-
-
-# read key file
-def read_key():
-    try:
-        with open('file.key', 'rb') as file_key:
-            key = file_key.read()
         return key
     except Exception as e:
         print(e)
@@ -27,10 +12,7 @@ def read_key():
 
 
 # encrypt file
-def encrypt_file():
-    key = read_key()
-    if not key:
-        return False
+def encrypt_file(key):
     fernet = Fernet(key)
 
     try:
@@ -48,11 +30,7 @@ def encrypt_file():
 
 
 # decrypt file
-def decrypt_file():
-    # read key
-    key = read_key()
-    if not key:
-        return False
+def decrypt_file(key):
     fernet = Fernet(key)
 
     try:
