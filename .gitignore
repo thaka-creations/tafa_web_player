@@ -148,3 +148,6 @@ Dockerfile.local
 docker-compose.local.yml
 local.*
 media/
+
+file.key
+nba.csv
