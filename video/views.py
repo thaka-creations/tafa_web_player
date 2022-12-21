@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from . import utils
+from . import utils, serializers as video_serializers
 
 
 class VideoViewSet(viewsets.ViewSet):
@@ -16,7 +16,7 @@ class VideoViewSet(viewsets.ViewSet):
         resp = utils.keygen()
         if not resp:
             return Response({"message": "Error generating key"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"key": str(resp)}, status=status.HTTP_200_OK)
+        return Response({"message": resp}, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
@@ -26,7 +26,10 @@ class VideoViewSet(viewsets.ViewSet):
     )
     def encrypt_file(self, request):
         # encrypt file
-        resp = utils.encrypt_file(request.data['key'])
+        serializer = video_serializers.EncryptDecryptFileSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        resp = utils.encrypt_file(serializer.validated_data['key'])
         if not resp:
             return Response({"message": "Error encrypting file"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "File encrypted successfully"}, status=status.HTTP_200_OK)
@@ -39,7 +42,10 @@ class VideoViewSet(viewsets.ViewSet):
     )
     def decrypt_file(self, request):
         # decrypt file
-        resp = utils.decrypt_file(request.data['key'])
+        serializer = video_serializers.EncryptDecryptFileSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        resp = utils.decrypt_file(serializer.validated_data['key'])
         if not resp:
             return Response({"message": "Error decrypting file"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "File decrypted successfully"}, status=status.HTTP_200_OK)
