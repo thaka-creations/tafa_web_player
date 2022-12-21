@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -62,13 +62,13 @@ REST_FRAMEWORK = {
         'users.utils.auth.SystemAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.BrowsableAPIRenderer',
-            'rest_framework_datatables.renderers.DatatablesRenderer',
-        ),
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
     'DEFAULT_FILTER_BACKENDS': (
-            'rest_framework_datatables.filters.DatatablesFilterBackend',
-        ),
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
 }
 
 MIDDLEWARE = [
@@ -103,7 +103,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tafa_player.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -117,7 +116,6 @@ DATABASES = {
         'PORT': os.environ.get("DATABASE_PORT")
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -137,7 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -148,7 +145,6 @@ TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -161,3 +157,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SERVICES_URLS = {
+    'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://'
+                    + os.environ.get('ACL_SERVICE') + os.environ.get('API_VERSION'),
+}
