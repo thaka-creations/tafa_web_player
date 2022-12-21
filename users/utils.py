@@ -5,35 +5,14 @@ from datetime import timedelta, datetime
 from django.conf import settings
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.contrib.auth.base_user import BaseUserManager
-from rest_framework.exceptions import APIException
+from rest_framework import authentication, status
+from rest_framework.exceptions import APIException, NotAuthenticated, NotAcceptable, AuthenticationFailed
 from oauth2_provider.generators import generate_client_id, generate_client_secret
 from oauth2_provider.models import get_application_model
+from oauth2_provider.oauth2_backends import get_oauthlib_core
+from .models import User
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
-
-
-class UserManager(BaseUserManager):
-    def create_user(self, username, is_staff, password=None):
-        if not username:
-            raise ValueError("Enter a valid username")
-
-        user = self.model(
-            username=username,
-            is_staff=True,
-        )
-        user.set_password(password)
-        user.save(using=self.db)
-        return user
-
-    def create_superuser(self, username, password=None):
-        user = self.create_user(
-            username=username, is_staff=True, password=password)
-        user.is_admin = True
-        user.is_active = True
-        user.save(using=self._db)
-
-        return user
 
 
 class ApplicationUser:
@@ -103,4 +82,76 @@ class ApplicationUser:
         }
         encoded = jwt.encode(payload, settings.TOKEN_SECRET_KEY, algorithm='HS512')
         return encoded
+
+
+class SystemAuthentication(authentication.BaseAuthentication):
+
+    def __init__(self):
+        self.authentication_header_prefix = 'Bearer'
+
+    @staticmethod
+    def get_jwt_header(request):
+        auth = request.headers.get('JWTAUTH', b'')
+        return auth
+
+    def authenticate(self, request):
+        request.user = None
+        oauthlib_core = get_oauthlib_core()
+        valid, r = oauthlib_core.verify_request(request, scopes=[])
+
+        if not valid:
+            return None
+
+        jwt_header = self.get_jwt_header(request).split()
+        header_prefix = self.authentication_header_prefix.lower()
+        if not jwt_header:
+            return None
+        if len(jwt_header) == 1 or len(jwt_header) > 2:
+            raise NotAuthenticated(
+                {"message": "Could Not Authenticate User", "status_code": status.HTTP_401_UNAUTHORIZED}
+            )
+
+        try:
+            prefix = jwt_header[0]
+            token = jwt_header[1]
+        except Exception:
+            raise NotAcceptable(
+                {"message": "No Token Present", "status_code": status.HTTP_406_NOT_ACCEPTABLE})
+
+        if prefix.lower() != header_prefix:
+            return None
+        return self.authenticate_credentials(request, token)
+
+    @staticmethod
+    def authenticate_credentials(request, token):
+        try:
+            decoded = jwt.decode(token, settings.TOKEN_SECRET_KEY, audience="urn:jst", algorithms=['HS512'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed(
+                {"message": "User Logged Out.Please Try Again",
+                 "status_code":
+                     status.HTTP_401_UNAUTHORIZED})
+
+        except jwt.InvalidTokenError:
+            raise AuthenticationFailed(
+                {"message": "Please Login Again",
+                 "status_code":
+                     status.HTTP_401_UNAUTHORIZED})
+
+        except Exception as e:
+            print(e)
+            raise AuthenticationFailed(
+                {"message": "Invalid Verification",
+                 "status_code": status.HTTP_401_UNAUTHORIZED})
+
+        try:
+            user = User.objects.get(id=decoded['user'])
+        except User.DoesNotExist:
+
+            raise AuthenticationFailed(
+                {"message": "Invalid User",
+                 "status_code":
+                     status.HTTP_401_UNAUTHORIZED})
+        return user, token
+
 

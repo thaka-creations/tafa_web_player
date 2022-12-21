@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from . import utils
+from . import manager
 
 # Create your models here.
 ACCOUNT_STATUS = [
@@ -36,7 +36,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "username"
 
-    objects = utils.UserManager()
+    objects = manager.UserManager()
 
     def __str__(self):
         return self.username
