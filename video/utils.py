@@ -55,9 +55,10 @@ def decrypt_file(key):
 def add_watermark():
     try:
         video = VideoFileClip('test.mp4')
-        watermark = ImageClip('watermark.jpeg').set_duration(video.duration)
-        final = CompositeVideoClip([video, watermark])
-        final.write_videofile('test.mp4')
+        txt_clip = TextClip("Watermark", fontsize=70, color='red')
+        txt_clip = txt_clip.set_position("center").set_duration(video.duration)
+        final = CompositeVideoClip([video, txt_clip])
+        final.write_videofile('test1.mp4')
         return True
     except Exception as e:
         print("Error watermarking video", e)
