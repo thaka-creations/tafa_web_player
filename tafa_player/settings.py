@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'users'
+    'users',
+    'video'
 ]
 
 REST_FRAMEWORK = {
