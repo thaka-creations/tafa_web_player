@@ -1,12 +1,16 @@
 import random
 from cryptography.fernet import Fernet
 from moviepy.editor import *
+from video.models import KeyStorage
 
 
 # key generation
+# generate a unique key
 def keygen():
     try:
         key = Fernet.generate_key()
+        if KeyStorage.objects.filter(key=key).exists():
+            keygen()
         return key
     except Exception as e:
         print(e)
