@@ -9,7 +9,7 @@ from video.models import KeyStorage
 def keygen():
     try:
         key = Fernet.generate_key()
-        if KeyStorage.objects.filter(key=key).exists():
+        if KeyStorage.objects.filter(key=str(key).encode()).exists():
             keygen()
         return key
     except Exception as e:

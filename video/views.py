@@ -38,7 +38,7 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         key = serializer.validated_data.get('key')
-        if not video_models.KeyStorage.objects.filter(key=key).exists():
+        if not video_models.KeyStorage.objects.filter(key=key.encode()).exists():
             return Response({"message": "Invalid key"}, status=status.HTTP_400_BAD_REQUEST)
 
         # activate key
