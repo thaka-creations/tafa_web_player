@@ -49,7 +49,7 @@ def decrypt_file(key):
 
         # opening the file in write mode and
         # writing the decrypted data
-        with open('test.mp4', 'wb') as decrypted_file:
+        with open('playing.mp4', 'wb') as decrypted_file:
             decrypted_file.write(decrypted)
         return True
     except Exception as e:
@@ -103,4 +103,3 @@ def add_watermark():
     except Exception as e:
         print(e)
         return False
-
