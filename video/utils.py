@@ -27,7 +27,7 @@ def encrypt_file(key):
         encrypted = fernet.encrypt(original)
 
         # opening file in write mode and writing encrypted data
-        with open('test.mp4', 'wb') as encrypted_file:
+        with open('playing.mp4', 'wb') as encrypted_file:
             encrypted_file.write(encrypted)
         return True
     except Exception as e:
