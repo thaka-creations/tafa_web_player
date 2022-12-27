@@ -97,11 +97,22 @@ class VideoViewSet(viewsets.ViewSet):
         url_name='app-registered'
     )
     def app_registered(self, request):
-        serializer = video_serializers.AppRegisteredSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        payload_serializer = video_serializers.AppRegisteredSerializer(data=request.data)
+        if not payload_serializer.is_valid():
+            return Response({"message": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        validated_data = serializer.validated_data
+        validated_data = payload_serializer.validated_data
+
+        created, _ = video_models.AppModel.objects.get_or_create(
+            serial_number=validated_data['serial_number'])
+
+        serializer = video_serializers.AppRegisteredSerializer(created, many=False)
+        return Response({"message": serializer.data}, status=status.HTTP_200_OK)
+
+
+
+
+
 
 
 
