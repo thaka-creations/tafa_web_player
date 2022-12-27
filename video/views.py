@@ -90,4 +90,19 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"message": "Error adding watermark"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Watermark added successfully"}, status=status.HTTP_200_OK)
 
+    @action(
+        methods=['POST'],
+        detail=False,
+        url_path='app-registered',
+        url_name='app-registered'
+    )
+    def app_registered(self, request):
+        serializer = video_serializers.AppRegisteredSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+
+
+
 

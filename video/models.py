@@ -40,3 +40,10 @@ class KeyStorage(BaseModel):
 
     def __str__(self):
         return self.key
+
+
+class AppModel(BaseModel):
+    serial_number = models.CharField(max_length=1000, unique=True)
+
+    def __str__(self):
+        return str(self.id)

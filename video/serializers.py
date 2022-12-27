@@ -7,3 +7,7 @@ class EncryptDecryptFileSerializer(serializers.Serializer):
 
 class ActivateKeySerializer(serializers.Serializer):
     key = serializers.CharField(required=True)
+
+
+class AppRegisteredSerializer(serializers.Serializer):
+    serial_number = serializers.CharField(required=True)
