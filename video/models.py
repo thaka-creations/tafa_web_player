@@ -36,7 +36,7 @@ class KeyStorage(BaseModel):
     mac_address = models.CharField(max_length=1000, null=True, blank=True)
     watch_time = models.PositiveIntegerField(blank=True, null=True)
     second_screen = models.BooleanField(default=False)  # allow second screen
-    expiry_date = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.key
