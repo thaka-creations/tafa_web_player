@@ -33,12 +33,12 @@ def encrypt_file(key):
     fernet = Fernet(key)
 
     try:
-        with open('test.mp4', 'rb') as file:
+        with open('watermarked_video.mp4', 'rb') as file:
             original = file.read()
         encrypted = fernet.encrypt(original)
 
         # opening file in write mode and writing encrypted data
-        with open('playing.mp4', 'wb') as encrypted_file:
+        with open('playing_one.mp4', 'wb') as encrypted_file:
             encrypted_file.write(encrypted)
         return True
     except Exception as e:
@@ -78,33 +78,27 @@ def add_watermark():
 
         # Define a function to return the watermark position at each frame
         def watermark_position(t):
-            # Set the speed and direction of the movement
-            speed_x = 50
-            speed_y = 30
             direction_x = 1
-            direction_y = -1
+            direction_y = 1
+            total_time = video.duration
+            z = total_time - t
+            total_distance_x = video.w - text_clip.w
+            total_distance_y = video.h - text_clip.h
+            x = (video.w / 2) + ((t / total_time) * total_distance_x * direction_x)
+            y = (video.h / 2) + ((t / total_time) * total_distance_y * direction_y)
 
-            # Calculate the position at the current time
-            x = (video.w / 2) + (speed_x * t * direction_x)
-            y = (video.h / 2) + (speed_y * t * direction_y)
-
-            # Keep the watermark within the bounds of the screen
             if x < 0:
-                x = 0
-                direction_x = 1
+                x = (video.w / 2) + ((t / total_time) * total_distance_x * direction_x)
             elif x > video.w - text_clip.w:
-                x = video.w - text_clip.w
-                direction_x = -1
+                x = (video.w / 2) + ((z / total_time) * total_distance_x * direction_x)
 
             if y < 0:
-                y = 0
-                direction_y = -1
+                y = (video.h / 2) + ((t / total_time) * total_distance_y * direction_y)
+
             elif y > video.h - text_clip.h:
-                y = video.h - text_clip.h
-                direction_y = -1
+                y = (video.h / 2) + ((z / total_time) * total_distance_y * direction_y)
 
             return x, y
-
         # Add the watermark to the video
         watermarked_video = CompositeVideoClip([video, text_clip.set_pos(watermark_position)])
 
