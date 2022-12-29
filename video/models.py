@@ -29,7 +29,7 @@ class Video(BaseModel):
 
 
 class KeyStorage(BaseModel):
-    key = models.CharField(max_length=1000, unique=True)
+    key = models.CharField(unique=True, max_length=1000)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_keys',
                                 blank=True, null=True)
     activated = models.BooleanField(default=False)

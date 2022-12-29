@@ -42,8 +42,11 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"message": "Invalid key"}, status=status.HTTP_400_BAD_REQUEST)
 
         # activate key
-        video_models.KeyStorage.objects.filter(key=key).update(activated=True)
-        return Response({"message": "Key activated successfully"}, status=status.HTTP_200_OK)
+        qs = video_models.KeyStorage.objects.filter(key=key.encode())
+        qs.update(activated=True)
+        instance = qs.first()
+        return Response({"message": video_serializers.KeyDetailSerializer(instance, context=key).data},
+                        status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],

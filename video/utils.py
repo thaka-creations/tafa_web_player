@@ -1,5 +1,8 @@
+import base64
 import random
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from moviepy.editor import *
 from video.models import KeyStorage
 
@@ -9,9 +12,17 @@ from video.models import KeyStorage
 def keygen():
     try:
         key = Fernet.generate_key()
-        if KeyStorage.objects.filter(key=str(key).encode()).exists():
+        salt = b'salt_'
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+        )
+        derived_key = base64.urlsafe_b64encode(kdf.derive(key))
+        if KeyStorage.objects.filter(key=derived_key).exists():
             keygen()
-        return key
+        return derived_key
     except Exception as e:
         print(e)
         return False
