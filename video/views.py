@@ -1,4 +1,5 @@
 from django.db import transaction
+from datetime import datetime
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -20,7 +21,7 @@ class VideoViewSet(viewsets.ViewSet):
 
         with transaction.atomic():
             # save generated key
-            video_models.KeyStorage.objects.create(key=resp)
+            video_models.KeyStorage.objects.create(key=resp, expires_at=datetime.now())
 
         return Response({"message": resp}, status=status.HTTP_200_OK)
 
