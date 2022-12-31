@@ -103,7 +103,6 @@ class VideoViewSet(viewsets.ViewSet):
     def app_registered(self, request):
         payload_serializer = video_serializers.AppRegisteredSerializer(data=request.data)
         if not payload_serializer.is_valid():
-            print(payload_serializer.errors)
             return Response({"message": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = payload_serializer.validated_data
@@ -112,13 +111,22 @@ class VideoViewSet(viewsets.ViewSet):
             serial_number=validated_data['serial_number'])
 
         serializer = video_serializers.AppRegisteredSerializer(created, many=False)
-        print(serializer.data)
         return Response({"message": serializer.data}, status=status.HTTP_200_OK)
 
 
-class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+class ProductViewSet(viewsets.ModelViewSet):
     queryset = video_models.Product.objects.all()
     serializer_class = video_serializers.ProductSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        resp = utils.keygen()
+        if not resp:
+            return Response({"message": "Error creating product"}, status=status.HTTP_400_BAD_REQUEST)
+        validated_data = serializer.validated_data
+        video_models.Product.objects.create(**validated_data, encryptor=resp)
+        return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
 
 
 

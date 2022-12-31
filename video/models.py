@@ -14,6 +14,7 @@ class BaseModel(models.Model):
 
 class Product(BaseModel):
     name = models.CharField(max_length=1000)
+    encryptor = models.CharField(max_length=1000, null=True, blank=True, unique=True)
 
     def __str__(self):
         return self.name
