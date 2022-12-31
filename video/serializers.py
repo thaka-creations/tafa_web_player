@@ -2,7 +2,7 @@ import base64
 
 from rest_framework import serializers
 
-from video.models import AppModel, KeyStorage
+from video.models import AppModel, KeyStorage, Product
 
 
 class EncryptDecryptFileSerializer(serializers.Serializer):
@@ -32,9 +32,9 @@ class KeyDetailSerializer(serializers.ModelSerializer):
         return self.context
 
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Product
-#         fields = '__all__'
-#         extra_kwargs = {
-#             'id': {'read_only': True}}
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        extra_kwargs = {
+            'id': {'read_only': True}}
