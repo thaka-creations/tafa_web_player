@@ -32,6 +32,7 @@ class Video(BaseModel):
 class KeyStorage(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     key = models.CharField(unique=True, max_length=1000)
+    time_stamp = models.TextField(null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_keys',
                                 blank=True, null=True)
     activated = models.BooleanField(default=False)

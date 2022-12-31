@@ -1,10 +1,11 @@
 import base64
 import random
+from datetime import datetime
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from moviepy.editor import *
-from video.models import KeyStorage
+from video.models import Product, KeyStorage
 
 
 # key generation
@@ -20,12 +21,20 @@ def keygen():
             iterations=100000,
         )
         derived_key = base64.urlsafe_b64encode(kdf.derive(key))
-        if KeyStorage.objects.filter(key=derived_key).exists():
+        if Product.objects.filter(encryptor=derived_key).exists():
             keygen()
         return derived_key
     except Exception as e:
         print(e)
         return False
+
+
+def numeric_keygen():
+    time_stamp = str(datetime.timestamp(datetime.now()))
+    key = time_stamp.replace('.', '')
+    if KeyStorage.objects.filter(key=key).exists():
+        numeric_keygen()
+    return time_stamp, key
 
 
 # encrypt file

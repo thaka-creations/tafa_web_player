@@ -46,3 +46,26 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.encryptor[2:-1]
 
 
+class NumericKeyGenSerializer(serializers.Serializer):
+    validity_choices = [
+        ('1', '1 day'),
+        ('7', '7 days'),
+        ('30', '1 month'),
+        ('60', '2 months'),
+        ('365', '1 year'),
+        ('730', '2 years'),
+        ('Unlimited', 'Unlimited')
+    ]
+    quantity = serializers.IntegerField(required=True, min_value=1, max_value=1000)
+    product = serializers.IntegerField(required=True)
+    validity = serializers.ChoiceField(choices=validity_choices, required=True)
+    watermark = serializers.CharField(allow_blank=True, allow_null=True, required=True)
+
+    def validate(self, attrs):
+        try:
+            product = Product.objects.get(id=attrs['product'])
+        except Product.DoesNotExist:
+            raise serializers.ValidationError('Product does not exist')
+        attrs['product'] = product
+        return attrs
+

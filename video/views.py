@@ -17,15 +17,13 @@ class VideoViewSet(viewsets.ViewSet):
     )
     def keygen(self, request):
         # key generation
-        resp = utils.keygen()
-        if not resp:
-            return Response({"message": "Error generating key"}, status=status.HTTP_400_BAD_REQUEST)
-
-        with transaction.atomic():
-            # save generated key
-            video_models.KeyStorage.objects.create(key=resp, expires_at=datetime.now())
-
-        return Response({"message": resp}, status=status.HTTP_200_OK)
+        time_stamp, key = utils.numeric_keygen()
+        # save key
+        video_models.KeyStorage.objects.create(
+            key=key,
+            time_stamp=time_stamp
+        )
+        return Response({"details": key}, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
