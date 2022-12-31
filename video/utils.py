@@ -29,12 +29,15 @@ def keygen():
         return False
 
 
-def numeric_keygen():
-    time_stamp = str(datetime.timestamp(datetime.now()))
-    key = time_stamp.replace('.', '')
-    if KeyStorage.objects.filter(key=key).exists():
-        numeric_keygen()
-    return time_stamp, key
+def numeric_keygen(quantity):
+    key_list = []
+    for i in range(quantity):
+        time_stamp = str(datetime.timestamp(datetime.now()))
+        key = time_stamp.replace('.', '')
+        if KeyStorage.objects.filter(key=key).exists():
+            numeric_keygen(quantity)
+        key_list.append({"key": key, "time_stamp": time_stamp})
+    return key_list
 
 
 # encrypt file

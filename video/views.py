@@ -16,14 +16,20 @@ class VideoViewSet(viewsets.ViewSet):
         url_name='keygen'
     )
     def keygen(self, request):
+        serializer = video_serializers.NumericKeyGenSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        quantity = validated_data['quantity']
         # key generation
-        time_stamp, key = utils.numeric_keygen()
+        time_stamp, key = utils.numeric_keygen(quantity)
         # save key
         video_models.KeyStorage.objects.create(
             key=key,
             time_stamp=time_stamp
         )
-        return Response({"details": key}, status=status.HTTP_200_OK)
+        return Response({"message": key}, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
