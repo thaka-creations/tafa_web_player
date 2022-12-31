@@ -33,8 +33,16 @@ class KeyDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    encryption_key = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
-        fields = ['id', 'name', 'encryptor']
+        fields = ['id', 'name', 'encryptor', 'encryption_key']
         extra_kwargs = {
-            'id': {'read_only': True}}
+            'id': {'read_only': True}, 'encryption_key': {'read_only': True}}
+
+    @staticmethod
+    def get_encryption_key(obj):
+        return obj.encryptor[2:-1]
+
+

@@ -1,3 +1,5 @@
+import base64
+
 from django.db import transaction
 from datetime import datetime
 from rest_framework import viewsets, status
