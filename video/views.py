@@ -116,6 +116,11 @@ class VideoViewSet(viewsets.ViewSet):
         return Response({"message": serializer.data}, status=status.HTTP_200_OK)
 
 
+# class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = video_models.Product.objects.all()
+#     serializer_class = video_serializers.ProductSerializer
+
+
 
 
 

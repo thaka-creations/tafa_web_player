@@ -30,3 +30,11 @@ class KeyDetailSerializer(serializers.ModelSerializer):
 
     def get_key(self, obj):
         return self.context
+
+
+# class ProductSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Product
+#         fields = '__all__'
+#         extra_kwargs = {
+#             'id': {'read_only': True}}

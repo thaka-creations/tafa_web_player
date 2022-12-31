@@ -4,7 +4,6 @@ from django.db import models
 
 # Create your models here.
 class BaseModel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -21,7 +20,8 @@ class Product(BaseModel):
 
 
 class Video(BaseModel):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=1000)
 
     def __str__(self):
@@ -29,6 +29,7 @@ class Video(BaseModel):
 
 
 class KeyStorage(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     key = models.CharField(unique=True, max_length=1000)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_keys',
                                 blank=True, null=True)
@@ -43,6 +44,7 @@ class KeyStorage(BaseModel):
 
 
 class AppModel(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     serial_number = models.CharField(max_length=1000)
 
     def __str__(self):
