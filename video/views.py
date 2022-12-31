@@ -1,7 +1,4 @@
-import base64
-
 from django.db import transaction
-from datetime import datetime
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,6 +12,8 @@ class VideoViewSet(viewsets.ViewSet):
             url_path='list-numeric-keys')
     def list_numeric_keys(self, request):
         qs = video_models.KeyStorage.objects.all()
+        serializer = video_serializers.ListNumericKeySerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
@@ -38,20 +37,21 @@ class VideoViewSet(viewsets.ViewSet):
         # key generation
         resp = utils.numeric_keygen(quantity)
 
-        # save key
-        video_models.KeyStorage.objects.bulk_create(
-            [
-                video_models.KeyStorage(
-                    key=i['key'],
-                    time_stamp=i['time_stamp'],
-                    product=product,
-                    expires_at=expires_at,
-                    validity=validity,
-                    watermark=watermark,
-                    second_screen=second_screen
-                ) for i in resp
-            ]
-        )
+        with transaction.atomic():
+            # save key
+            video_models.KeyStorage.objects.bulk_create(
+                [
+                    video_models.KeyStorage(
+                        key=i['key'],
+                        time_stamp=i['time_stamp'],
+                        product=product,
+                        expires_at=expires_at,
+                        validity=validity,
+                        watermark=watermark,
+                        second_screen=second_screen
+                    ) for i in resp
+                ]
+            )
         return Response({"message": "Serial key(s) generated successfully"}, status=status.HTTP_200_OK)
 
     @action(
@@ -67,15 +67,14 @@ class VideoViewSet(viewsets.ViewSet):
         if not serializer.is_valid():
             return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        key = serializer.validated_data.get('key')
-        if not video_models.KeyStorage.objects.filter(key=key.encode()).exists():
+        qs = video_models.KeyStorage.objects.filter(key=serializer.validated_data['key'])
+
+        if not qs.exists():
             return Response({"message": "Invalid key"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # activate key
-        qs = video_models.KeyStorage.objects.filter(key=key.encode())
         qs.update(activated=True)
         instance = qs.first()
-        return Response({"message": video_serializers.KeyDetailSerializer(instance, context=key).data},
+        return Response({"message": video_serializers.KeyDetailSerializer(instance).data},
                         status=status.HTTP_200_OK)
 
     @action(

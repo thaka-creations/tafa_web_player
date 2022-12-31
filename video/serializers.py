@@ -21,14 +21,32 @@ class AppRegisteredSerializer(serializers.ModelSerializer):
 
 
 class KeyDetailSerializer(serializers.ModelSerializer):
-    key = serializers.SerializerMethodField()
+    encryption_key = serializers.SerializerMethodField()
+    product_name = serializers.SerializerMethodField()
+    product_id = serializers.SerializerMethodField()
 
     class Meta:
         model = KeyStorage
-        fields = '__all__'
+        fields = ['key', 'encryption_key', 'watermark', 'activated', 'expires_at', 'second_screen', 'product_name',
+                  'product_id']
 
-    def get_key(self, obj):
-        return self.context
+    @staticmethod
+    def get_encryption_key(obj):
+        return obj.product.encryptor[2:-1]
+
+    @staticmethod
+    def get_product_name(obj):
+        try:
+            return obj.product.name
+        except AttributeError:
+            return None
+
+    @staticmethod
+    def get_product_id(obj):
+        try:
+            return obj.product.id
+        except AttributeError:
+            return None
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -76,3 +94,25 @@ class NumericKeyGenSerializer(serializers.Serializer):
         attrs.update({'expires_at': expires_at, 'product': product})
         return attrs
 
+
+class ListNumericKeySerializer(serializers.ModelSerializer):
+    product = serializers.SerializerMethodField()
+    expires_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = KeyStorage
+        fields = ['id', 'key', 'product', 'expires_at', 'activated', 'watch_time', 'second_screen', 'validity',
+                  'watermark']
+
+    @staticmethod
+    def get_product(obj):
+        try:
+            return obj.product.name
+        except AttributeError:
+            return None
+
+    @staticmethod
+    def get_expires_at(obj):
+        if obj.expires_at:
+            return obj.expires_at.strftime('%Y-%m-%d')
+        return None
