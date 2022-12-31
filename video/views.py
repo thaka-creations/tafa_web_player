@@ -22,14 +22,30 @@ class VideoViewSet(viewsets.ViewSet):
 
         validated_data = serializer.validated_data
         quantity = validated_data['quantity']
+        product = validated_data['product']
+        expires_at = validated_data['expires_at']
+        validity = validated_data['validity']
+        watermark = validated_data['watermark']
+        second_screen = validated_data['second_screen']
+
         # key generation
-        time_stamp, key = utils.numeric_keygen(quantity)
+        resp = utils.numeric_keygen(quantity)
+
         # save key
-        video_models.KeyStorage.objects.create(
-            key=key,
-            time_stamp=time_stamp
+        video_models.KeyStorage.objects.bulk_create(
+            [
+                video_models.KeyStorage(
+                    key=i['key'],
+                    time_stamp=i['time_stamp'],
+                    product=product,
+                    expires_at=expires_at,
+                    validity=validity,
+                    watermark=watermark,
+                    second_screen=second_screen
+                ) for i in resp
+            ]
         )
-        return Response({"message": key}, status=status.HTTP_200_OK)
+        return Response({"message": "Serial key(s) generated successfully"}, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
@@ -133,12 +149,3 @@ class ProductViewSet(viewsets.ModelViewSet):
         validated_data = serializer.validated_data
         video_models.Product.objects.create(**validated_data, encryptor=resp)
         return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
-
-
-
-
-
-
-
-
-

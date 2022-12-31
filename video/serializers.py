@@ -1,5 +1,4 @@
-import base64
-
+from datetime import datetime, timedelta
 from rest_framework import serializers
 
 from video.models import AppModel, KeyStorage, Product
@@ -60,12 +59,20 @@ class NumericKeyGenSerializer(serializers.Serializer):
     product = serializers.IntegerField(required=True)
     validity = serializers.ChoiceField(choices=validity_choices, required=True)
     watermark = serializers.CharField(allow_blank=True, allow_null=True, required=True)
+    second_screen = serializers.BooleanField(default=True)
 
     def validate(self, attrs):
         try:
             product = Product.objects.get(id=attrs['product'])
         except Product.DoesNotExist:
             raise serializers.ValidationError('Product does not exist')
-        attrs['product'] = product
+
+        # expires at
+        if attrs['validity'] == 'Unlimited':
+            expires_at = None
+        else:
+            expires_at = datetime.now() + timedelta(days=int(attrs['validity']))
+            expires_at = expires_at.strftime('%Y-%m-%d')
+        attrs.update({'expires_at': expires_at, 'product': product})
         return attrs
 
