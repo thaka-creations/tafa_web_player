@@ -46,6 +46,9 @@ class KeyStorage(BaseModel):
     def __str__(self):
         return self.key
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class AppModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

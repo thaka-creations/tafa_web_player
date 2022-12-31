@@ -9,6 +9,13 @@ from . import utils, serializers as video_serializers, models as video_models
 
 
 class VideoViewSet(viewsets.ViewSet):
+    @action(detail=False,
+            methods=['GET'],
+            url_name='list-numeric-keys',
+            url_path='list-numeric-keys')
+    def list_numeric_keys(self, request):
+        qs = video_models.KeyStorage.objects.all()
+
     @action(
         methods=['POST'],
         detail=False,
