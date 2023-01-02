@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
     'users',
-    'video'
+    'video',
+    'staff',
 ]
 
 REST_FRAMEWORK = {

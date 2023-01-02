@@ -19,6 +19,7 @@ from django.urls import path, include
 api_version = "v1"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path(f"api/{api_version}/", include("video.urls")),
+    path("web/admin/", include("staff.urls")),
 ]
