@@ -24,6 +24,9 @@ class Video(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=1000)
+    file_extension = models.CharField(max_length=255, null=True, blank=True)
+    file_size = models.TextField(null=True, blank=True)
+    duration = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
