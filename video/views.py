@@ -2,6 +2,8 @@ from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from . import utils, serializers as video_serializers, models as video_models
 
 
@@ -185,15 +187,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         video_models.Product.objects.create(**validated_data, encryptor=resp)
         return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
 
-    @action(
-        methods=['GET'],
-        detail=True,
-        url_path="list-product-videos",
-        url_name="list-product-videos"
-    )
-    def list_product_videos(self, request):
+
+class ListProductVideoApiView(APIView):
+    def get(self, request):
         try:
-            product = video_models.Product.objects.get(id=request.GET.get('request_id'))
+            product = video_models.Product.objects.get(id=self.request.GET.get('request_id'))
         except video_models.Product.DoesNotExist:
             return Response({"message": "Product does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
