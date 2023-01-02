@@ -184,3 +184,21 @@ class ProductViewSet(viewsets.ModelViewSet):
         validated_data = serializer.validated_data
         video_models.Product.objects.create(**validated_data, encryptor=resp)
         return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
+
+    @action(
+        methods=['GET'],
+        detail=True,
+        url_path="list-product-videos",
+        url_name="list-product-videos"
+    )
+    def list_product_videos(self, request):
+        try:
+            product = video_models.Product.objects.get(id=request.GET.get('request_id'))
+        except video_models.Product.DoesNotExist:
+            return Response({"message": "Product does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = video_serializers.ListProductVideoSerializer(product.product_videos.all(), many=True)
+        return Response({"message": serializer.data}, status=status.HTTP_200_OK)
+
+
+

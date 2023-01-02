@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from rest_framework import serializers
 
-from video.models import AppModel, KeyStorage, Product
+from video.models import AppModel, KeyStorage, Product, Video
 
 
 class EncryptDecryptFileSerializer(serializers.Serializer):
@@ -136,3 +136,14 @@ class CreateVideoSerializer(serializers.Serializer):
             raise serializers.ValidationError('Product does not exist')
         attrs.update({'product': product})
         return attrs
+
+
+class ListProductVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = [
+            'name',
+            'file_extension',
+            'file_size',
+            'duration',
+        ]

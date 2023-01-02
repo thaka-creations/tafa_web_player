@@ -22,7 +22,7 @@ class Product(BaseModel):
 
 class Video(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True, related_name='product_videos')
     name = models.CharField(max_length=1000)
     file_extension = models.CharField(max_length=255, null=True, blank=True)
     file_size = models.TextField(null=True, blank=True)
@@ -30,6 +30,9 @@ class Video(BaseModel):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-created_at']
 
 
 class KeyStorage(BaseModel):
