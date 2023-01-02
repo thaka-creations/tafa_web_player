@@ -55,9 +55,9 @@
         <img src="{% static 'images/tafa/logo.png' %}" alt="">
         <span class="d-none d-lg-block">
           {% if request.user.is_superuser %}
-          Tafa SuperAdmin
+          Tafa Player SuperAdmin
           {% else %}
-          Tafa Staff
+          Tafa Player Staff
           {% endif %}
         </span>
       </a>
@@ -316,15 +316,15 @@
         </ul>
       </li><!-- End Components Nav -->
 
-      <li class="nav-item {% if page == 'forms' %} nav-active {% endif %}">
-        <a class="nav-link collapsed" href="/admin/forms">
-          <i class="bi bi-journal-text"></i><span>Forms</span>
+      <li class="nav-item {% if page == 'products' %} nav-active {% endif %}">
+        <a class="nav-link collapsed" href="/web/admin/products">
+          <i class="bi bi-shop"></i><span>Products</span>
         </a>
       </li><!-- End Form Nav -->
 
-      <li class="nav-item {% if page == 'subjects' %} nav-active {% endif %}">
-        <a class="nav-link collapsed" href="/admin/subjects">
-          <i class="bi bi-journal-text"></i><span>Subjects</span>
+      <li class="nav-item {% if page == 'keys' %} nav-active {% endif %}">
+        <a class="nav-link collapsed" href="/web/admin/serial-keys">
+          <i class="bi bi-key"></i><span>Serial Keys</span>
         </a>
       </li><!-- End Subjects Nav -->
 
