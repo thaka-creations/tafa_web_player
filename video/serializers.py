@@ -122,7 +122,7 @@ class VideoFileSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     size = serializers.CharField(required=True)
     extension = serializers.CharField(required=True)
-    duration = serializers.CharField(required=True)
+    duration = serializers.CharField(required=True, allow_blank=True, allow_null=True)
 
 
 class CreateVideoSerializer(serializers.Serializer):

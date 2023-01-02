@@ -141,6 +141,35 @@ class VideoViewSet(viewsets.ViewSet):
         serializer = video_serializers.AppRegisteredSerializer(created, many=False)
         return Response({"message": serializer.data}, status=status.HTTP_200_OK)
 
+    @action(
+        methods=['POST'],
+        detail=False,
+        url_path='add-video',
+        url_name='add-video'
+    )
+    def add_video(self, request):
+        serializer = video_serializers.CreateVideoSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        file_list = validated_data['file_list']
+        product = validated_data['product']
+
+        with transaction.atomic():
+            video_models.Video.objects.bulk_create(
+                [
+                    video_models.Video(
+                        product=product,
+                        name=i['name'],
+                        file_extension=i['extension'],
+                        file_size=i['size'],
+                        duration=i['duration'],
+                    ) for i in file_list
+                ]
+            )
+            return Response({"message": "Video(s) added successfully"}, status=status.HTTP_200_OK)
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = video_models.Product.objects.all()
