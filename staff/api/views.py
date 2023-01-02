@@ -9,3 +9,9 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = video_models.Product.objects.all()
     serializer_class = serializers.ListProductSerializer
     pagination_class = DatatablesPageNumberPagination
+
+
+class SerialKeyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = video_models.KeyStorage.objects.all()
+    serializer_class = serializers.ListSerialKeySerializer
+    pagination_class = DatatablesPageNumberPagination
