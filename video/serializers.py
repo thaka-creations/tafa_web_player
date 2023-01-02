@@ -116,3 +116,23 @@ class ListNumericKeySerializer(serializers.ModelSerializer):
         if obj.expires_at:
             return obj.expires_at.strftime('%Y-%m-%d')
         return None
+
+
+class VideoFileSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    size = serializers.CharField(required=True)
+    extension = serializers.CharField(required=True)
+    duration = serializers.CharField(required=True)
+
+
+class CreateVideoSerializer(serializers.Serializer):
+    product = serializers.IntegerField(required=True)
+    file_list = serializers.ListField(child=VideoFileSerializer(), allow_empty=False)
+
+    def validate(self, attrs):
+        try:
+            product = Product.objects.get(id=attrs['product'])
+        except Product.DoesNotExist:
+            raise serializers.ValidationError('Product does not exist')
+        attrs.update({'product': product})
+        return attrs
