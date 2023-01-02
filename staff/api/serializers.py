@@ -9,7 +9,8 @@ class ListProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = video_models.Product
         fields = [
-            'DT_RowId', 'DT_RowAttr', 'name'
+            'DT_RowId', 'DT_RowAttr', 'name', 'title', 'short_description',
+            'long_description'
         ]
 
     @staticmethod
