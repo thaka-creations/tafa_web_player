@@ -43,3 +43,12 @@ class RetrieveProductView(View):
             return redirect('staff:products')
 
         return render(self.request, 'staff/products/detail.html', {'page': self.page, 'product': instance})
+
+
+class CreateProductView(View):
+    page = "products"
+    form_class = forms.CreateProductForm
+
+    def get(self, request):
+        context = {'form': self.form_class, 'page': self.page}
+        return render(self.request, 'staff/products/create.html', context)

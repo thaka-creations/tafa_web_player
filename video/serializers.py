@@ -51,10 +51,12 @@ class KeyDetailSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     encryption_key = serializers.SerializerMethodField()
+    title = serializers.CharField(required=True)
+    short_description = serializers.CharField(required=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'encryptor', 'encryption_key']
+        fields = ['id', 'name', 'encryptor', 'encryption_key', 'title', 'short_description', 'long_description']
         extra_kwargs = {
             'id': {'read_only': True}, 'encryption_key': {'read_only': True}}
 

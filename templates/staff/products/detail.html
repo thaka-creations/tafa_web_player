@@ -15,17 +15,19 @@
     <section class="product-detail">
         <div class="card shadow">
             <div class="card-header">
-                Product Video Content
+                <span>Product Content</span>
             </div>
             <div class="card-body pt-2">
                 <div class="table-responsive">
                     <table class="product-content-table table table-striped table-hover">
                         <thead>
                             <tr>
-                                <td>Name</td>
-                                <td>Size</td>
-                                <td>Extension</td>
-                                <td>Duration</td>
+                                <td class="text-center">#</td>
+                                <td class="text-center">Name</td>
+                                <td class="text-center">Size</td>
+                                <td class="text-center">Extension</td>
+                                <td class="text-center">Duration</td>
+                                <td class="text-center">Date Added</td>
                             </tr>
                         </thead>
                     </table>
@@ -38,32 +40,49 @@
 
 {% block scripts %}
     <script>
-        $("product-content-table").dataTable(
+        $(".product-content-table").dataTable(
             {
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
                     "url": "/api/v1/datatables/product/content?format=datatables",
                     "type": "GET",
-                    "params": {
+                    "data": {
                         "request_id": "{{product.id}}"
                     }
                 },
                 "columns": [
                     {
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        },
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                    },
+                    {
                         "data": "name",
+                        "name": "name",
                         "className": "text-center"
                     },
                     {
-                        "data": "size",
+                        "data": "file_size",
+                        "name": "file_size",
                         "className": "text-center"
                     },
                     {
-                        "data": "extension",
+                        "data": "file_extension",
+                        "name": "file_extension",
                         "className": "text-center"
                     },
                     {
                         "data": "duration",
+                        "name": "duration",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "created_at",
+                        "name": "created_at",
                         "className": "text-center"
                     }
                 ]

@@ -29,3 +29,15 @@ class GenerateKeyForm(forms.Form):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
+
+
+class CreateProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'title', 'short_description', 'long_description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}),
+            'title': forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}),
+            'short_description': forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}),
+            'long_description': forms.Textarea(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}),
+        }

@@ -14,15 +14,17 @@
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
-                <li class="breadcrumb-item active"> Products</li>
+                <li class="breadcrumb-item active">Products</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="list-products">
         <div class="card shadow">
-            <div class="card-header">
-                Products
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Products</span>
+                <button class="btn btn-primary rounded-0 shadow-none"
+                onclick="window.location='/web/admin/create-product'">Add Product</button>
             </div>
 
             <div class="card-body pt-2">

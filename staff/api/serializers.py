@@ -86,6 +86,8 @@ class SearchProductSerializer(serializers.ModelSerializer):
 class ListProductContentSerializer(serializers.ModelSerializer):
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
+    file_extension = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = video_models.Video
@@ -98,6 +100,10 @@ class ListProductContentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_DT_RowAttr(obj):
         return {'pk': obj.id}
+
+    @staticmethod
+    def get_file_extension(obj):
+        return obj.file_extension[1:]
 
     @staticmethod
     def get_created_at(obj):

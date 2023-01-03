@@ -1,0 +1,78 @@
+{% extends "staff/partials/theme.html" %}
+
+{% block styles %}
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css'>
+{% endblock %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"> <a href="/web/admin/products">Products</a></li>
+                <li class="breadcrumb-item active">Create Product</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="create-product">
+        <div class="card shadow w-75">
+            <div class="card-header">
+                Create Product
+            </div>
+            <div class="card-body pt-2">
+                <form action="/api/v1/products" method="POST" class="create-product-fm">
+                    {% csrf_token %}
+                    {{form}}
+                    <button class="btn btn-primary rounded-0 shadow-none" type="submit">
+                        Create Product
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+    $(document).ready(function(){
+        function gotoPage(){
+            window.location.href="/web/admin/products"
+        }
+
+        function displayMessage(message, type, title){
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                confirmButtonText: 'Ok',
+                didClose: () => {
+                    if (type == 'success'){
+                        gotoPage();
+                    }
+                }
+            });
+        }
+
+       $('.create-product-fm').on("submit", function(e){
+          e.preventDefault();
+          let data = $(this).serialize();
+          let method = $(this).attr("method");
+          let url = $(this).attr("action");
+          $.ajax({
+               url: url,
+               type: method,
+               data: data,
+               success: function(data){
+                   displayMessage(data.message, "success" , "Success")
+               },
+               error: function(err){
+                   displayMessage("Title and short description required", "error", "Error")
+               }
+           });
+       });
+    });
+</script>
+{% endblock %}
