@@ -7,12 +7,13 @@ from video import models as video_models
 class ListProductSerializer(serializers.ModelSerializer):
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = video_models.Product
         fields = [
             'DT_RowId', 'DT_RowAttr', 'id', 'name', 'title', 'short_description',
-            'long_description'
+            'long_description', 'created_at'
         ]
 
     @staticmethod
@@ -23,16 +24,22 @@ class ListProductSerializer(serializers.ModelSerializer):
     def get_DT_RowAttr(obj):
         return {'pk': obj.id}
 
+    @staticmethod
+    def get_created_at(obj):
+        return obj.created_at.strftime('%b %d, %Y %H:%M:%S')
+
 
 class ListSerialKeySerializer(serializers.ModelSerializer):
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
     product_name = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = video_models.KeyStorage
-        fields = ['DT_RowId', 'DT_RowAttr', 'key', 'product', 'product_name', 'validity', 'status']
+        fields = ['DT_RowId', 'DT_RowAttr', 'key', 'product', 'product_name', 'validity', 'status',
+                  'created_at']
 
     @staticmethod
     def get_DT_RowId(obj):
@@ -58,3 +65,41 @@ class ListSerialKeySerializer(serializers.ModelSerializer):
             return 'Activated'
         else:
             return 'Open'
+
+    @staticmethod
+    def get_created_at(obj):
+        return obj.created_at.strftime('%b %d, %Y %H:%M:%S')
+
+
+class SearchProductSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = video_models.Product
+        fields = ['id', 'name']
+
+    @staticmethod
+    def get_name(obj):
+        return obj.name + " (" + str(obj.id) + ")"
+
+
+class ListProductContentSerializer(serializers.ModelSerializer):
+    DT_RowId = serializers.SerializerMethodField()
+    DT_RowAttr = serializers.SerializerMethodField()
+
+    class Meta:
+        model = video_models.Video
+        fields = ['name', 'file_size', 'file_extension', 'duration', 'created_at', 'DT_RowId', 'DT_RowAttr']
+
+    @staticmethod
+    def get_DT_RowId(obj):
+        return obj.id
+
+    @staticmethod
+    def get_DT_RowAttr(obj):
+        return {'pk': obj.id}
+
+    @staticmethod
+    def get_created_at(obj):
+        return obj.created_at.strftime('%b %d, %Y %H:%M:%S')
+

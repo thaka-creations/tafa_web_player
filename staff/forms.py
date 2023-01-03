@@ -1,4 +1,5 @@
 from django import forms
+from video.models import Product
 
 
 class GenerateKeyForm(forms.Form):
@@ -11,20 +12,20 @@ class GenerateKeyForm(forms.Form):
         ('730', '2 years'),
         ('Unlimited', 'Unlimited')
     ]
-    product = forms.CharField(
-        max_length=100,
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0'}))
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.none(), required=True,
+        widget=forms.Select(attrs={'class': 'form-control products-select shadow-none rounded-0 mb-2'})
+    )
     quantity = forms.IntegerField(
         min_value=1,
         max_value=1000,
         required=True,
-        widget=forms.NumberInput(attrs={'class': 'form-control shadow-none rounded-0'}))
+        widget=forms.NumberInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
     validity = forms.ChoiceField(
         choices=validity_choices,
         required=True,
-        widget=forms.Select(attrs={'class': 'form-control shadow-none rounded-0'}))
+        widget=forms.Select(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
     watermark = forms.CharField(
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0'}))
+        widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))

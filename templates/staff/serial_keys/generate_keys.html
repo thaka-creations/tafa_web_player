@@ -1,5 +1,10 @@
 {% extends "staff/partials/theme.html" %}
 
+{% block styles %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css'>
+{% endblock %}
+
 {% block content %}
     <div class="pagetitle">
         <h1>Dashboard</h1>
@@ -14,7 +19,7 @@
 
     <section class="generate-serial-key">
 
-        <div class="card shadow">
+        <div class="card shadow w-50">
 
             <div class="card-header">
                 Generate Key(s)
@@ -38,4 +43,73 @@
         </div>
 
     </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+    $(".products-select").select2({
+            placeholder: "Select a product",
+            ajax: {
+                url: "/api/v1/datatables/search-product",
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            let new_list = []
+                            for (let i = 0; i < item.length; i++) {
+                                new_list.push({
+                                    id: item[i].id,
+                                    text: item[i].name
+                                })
+                            }
+                            return new_list
+                        })
+                    };
+                },
+
+                cache: true
+            },
+    }
+    );
+</script>
+<script>
+    // on closure of sweetalert, reload the page
+    function gotoPage(){
+        window.location.href="/web/admin/serial-keys"
+    }
+
+    function displayMessage(message, type, title){
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: type,
+            confirmButtonText: 'Ok',
+            didClose: () => {
+                if (type == 'success'){
+                    gotoPage();
+                }
+            }
+        });
+    }
+
+    $(".generate-key-fm").on("submit", function(e){
+       e.preventDefault();
+       let data = $(this).serialize();
+       let url = $(this).attr("action");
+       $.ajax({
+           url: url,
+           type: "POST",
+           data: data,
+           success: function(data){
+                displayMessage(data.message, "success" , "Success")
+           },
+           error: function(err){
+               displayMessage("Failed to generate serial key. Try again.", "error", "Error")
+           }
+       })
+    });
+</script>
 {% endblock %}

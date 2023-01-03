@@ -1,7 +1,11 @@
 {% extends "staff/partials/theme.html" %}
 
 {% block styles %}
-
+<style>
+    .list-products-tables tbody > tr{
+        cursor: pointer;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -32,6 +36,7 @@
                                 <th class="text-center">Title</th>
                                 <th class="text-center">Short Description</th>
                                 <th class="text-center">Long Description</th>
+                                <th class="text-center">Date Created</th>
                             </tr>
                         </thead>
                     </table>
@@ -73,8 +78,25 @@
                     {
                         "data": "long_description",
                         "className": "text-center"
+                    },
+                    {
+                        "data": "created_at",
+                        "className": "text-center"
                     }
-                ]
+                ],
+
+            });
+
+            // add tooltip
+            $('.list-products-tables tbody').each(function() {
+               $(this).attr('title', 'Click to view product content');
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            //row clickable
+            $('.list-products-tables tbody').on('click', 'tr', function(){
+                let data = $('.list-products-tables').DataTable().row(this).data();
+                window.location.href = "/web/admin/retrieve-product/" + data.id;
             });
         });
     </script>

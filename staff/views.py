@@ -1,6 +1,7 @@
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . import forms
+from video import models as video_models
 
 
 class DashboardView(View):
@@ -29,3 +30,16 @@ class GenerateSerialKeyView(View):
     def get(self, request):
         context = {'form': self.form_class, 'page': self.page}
         return render(self.request, 'staff/serial_keys/generate_keys.html', context)
+
+
+class RetrieveProductView(View):
+    page = "products"
+
+    def get(self, request, pk):
+        try:
+            instance = video_models.Product.objects.get(id=pk)
+        except video_models.Product.DoesNotExist:
+            # return render(self.request, 'staff/404.html')
+            return redirect('staff:products')
+
+        return render(self.request, 'staff/products/detail.html', {'page': self.page, 'product': instance})
