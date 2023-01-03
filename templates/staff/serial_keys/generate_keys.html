@@ -24,12 +24,14 @@
 
                 <form action="/api/v1/videos/keygen" method="POST" class="generate-key-fm">
                     {% csrf_token %}
-                </form>{
-                "quantity": 2,
-                "product": 8,
-                "validity": "1",
-                "watermark": "My Watermark"
-                }
+
+                    {{form}}
+
+                    <button class="btn btn-primary rounded-0 shadow-none" type="submit">
+                        Generate
+                    </button>
+
+                </form>
 
             </div>
 

@@ -1,5 +1,6 @@
 from django.views import View
 from django.shortcuts import render
+from . import forms
 
 
 class DashboardView(View):
@@ -23,6 +24,8 @@ class ListSerialKeyView(View):
 
 class GenerateSerialKeyView(View):
     page = "keys"
+    form_class = forms.GenerateKeyForm
 
     def get(self, request):
-        return render(self.request, 'staff/serial_keys/generate_keys.html', {'page': self.page})
+        context = {'form': self.form_class, 'page': self.page}
+        return render(self.request, 'staff/serial_keys/generate_keys.html', context)
