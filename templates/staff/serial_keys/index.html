@@ -1,1 +1,94 @@
 {% extends "staff/partials/theme.html" %}
+
+{% block styles %}
+<style>
+    th, td{
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active"> Serial Keys</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="list-serial-keys">
+
+        <div class="card shadow">
+            <div class="card-header">
+                Serial Keys
+            </div>
+
+            <div class="card-body pt-2">
+                <div class="table-responsive">
+                    <table class="list-serial-keys-table table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Product
+                                </th>
+                                <th>
+                                    Product Name
+                                </th>
+                                <th>
+                                    Serial Key
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Validity
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.list-products-tables').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/api/v1/datatables/serial-keys?format=datatables",
+                    "type": "GET"
+                },
+                "columns": [
+                    {
+                        "data": "product",
+                        "name": "product__id"
+                    },
+                    {
+                        "data": "product_name",
+                        "name": "product__name"
+                    },
+                    {
+                        "data": "key",
+                        "name": "key"
+                    },
+                    {
+                        "data": "status"
+                    },
+                    {
+                        "data": "validity"
+                    }
+                ]
+            });
+        });
+    </script>
+{% endblock %}

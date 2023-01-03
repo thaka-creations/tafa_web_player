@@ -1,1 +1,70 @@
 {% extends "staff/partials/theme.html" %}
+
+{% block styles %}
+ <style>
+     th, td{
+         text-align: center;
+     }
+ </style>
+{% endblock %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active"> Products</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="list-products">
+        <div class="card shadow">
+            <div class="card-header">
+                Products
+            </div>
+
+            <div class="card-body pt-2">
+                <div class="table-responsive">
+
+                    <table class="list-products-tables table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Title</th>
+                                <th>Short Description</th>
+                                <th>Long Description</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.list-products-tables').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/api/v1/datatables/products?format=datatables",
+                    "type": "GET"
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "name"},
+                    {"data": "title"},
+                    {"data": "short_description"},
+                    {"data": "long_description"}
+                ]
+            });
+        });
+    </script>
+{% endblock %}
