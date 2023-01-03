@@ -2,8 +2,8 @@
 
 {% block styles %}
 <style>
-    th, td{
-        text-align: center;
+    .btn-generate-serial-keys{
+        cursor: pointer;
     }
 </style>
 {% endblock %}
@@ -22,8 +22,12 @@
     <section class="list-serial-keys">
 
         <div class="card shadow">
-            <div class="card-header">
-                Serial Keys
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Serial Keys</span>
+                <button class="btn btn-primary btn-generate-serial-keys rounded-0 shadow-none"
+                onclick="window.location='/web/admin/serial-keys/generate'">
+                    Generate Key(s)
+                </button>
             </div>
 
             <div class="card-body pt-2">
@@ -31,19 +35,19 @@
                     <table class="list-serial-keys-table table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>
+                                <th class="text-center">
                                     Product
                                 </th>
-                                <th>
+                                <th class="text-center">
                                     Product Name
                                 </th>
-                                <th>
+                                <th class="text-center">
                                     Serial Key
                                 </th>
-                                <th>
+                                <th class="text-center">
                                     Status
                                 </th>
-                                <th>
+                                <th class="text-center">
                                     Validity
                                 </th>
                             </tr>
@@ -61,7 +65,7 @@
 {% block scripts %}
     <script>
         $(document).ready(function(){
-            $('.list-products-tables').DataTable({
+            $('.list-serial-keys-table').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
@@ -71,21 +75,26 @@
                 "columns": [
                     {
                         "data": "product",
-                        "name": "product__id"
+                        "name": "product__id",
+                        "className": "text-center",
                     },
                     {
                         "data": "product_name",
-                        "name": "product__name"
+                        "name": "product__name",
+                        "className": "text-center",
                     },
                     {
                         "data": "key",
-                        "name": "key"
+                        "name": "key",
+                        "className": "text-center",
                     },
                     {
-                        "data": "status"
+                        "data": "status",
+                        "className": "text-center",
                     },
                     {
-                        "data": "validity"
+                        "data": "validity",
+                        "className": "text-center",
                     }
                 ]
             });

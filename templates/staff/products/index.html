@@ -1,11 +1,7 @@
 {% extends "staff/partials/theme.html" %}
 
 {% block styles %}
- <style>
-     th, td{
-         text-align: center;
-     }
- </style>
+
 {% endblock %}
 
 {% block content %}
@@ -31,11 +27,11 @@
                     <table class="list-products-tables table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Title</th>
-                                <th>Short Description</th>
-                                <th>Long Description</th>
+                                <th class="text-center">Code</th>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">Title</th>
+                                <th class="text-center">Short Description</th>
+                                <th class="text-center">Long Description</th>
                             </tr>
                         </thead>
                     </table>
@@ -58,11 +54,26 @@
                     "type": "GET"
                 },
                 "columns": [
-                    {"data": "id"},
-                    {"data": "name"},
-                    {"data": "title"},
-                    {"data": "short_description"},
-                    {"data": "long_description"}
+                    {
+                        "data": "id",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "name",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "title",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "short_description",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "long_description",
+                        "className": "text-center"
+                    }
                 ]
             });
         });

@@ -1,0 +1,39 @@
+{% extends "staff/partials/theme.html" %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="/web/admin/serial-keys">Serial Keys</a></li>
+                <li class="breadcrumb-item active">Generate Key(s)</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="generate-serial-key">
+
+        <div class="card shadow">
+
+            <div class="card-header">
+                Generate Key(s)
+            </div>
+
+            <div class="card-body pt-2">
+
+                <form action="/api/v1/videos/keygen" method="POST" class="generate-key-fm">
+                    {% csrf_token %}
+                </form>{
+                "quantity": 2,
+                "product": 8,
+                "validity": "1",
+                "watermark": "My Watermark"
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+{% endblock %}
