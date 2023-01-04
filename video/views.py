@@ -35,25 +35,26 @@ class VideoViewSet(viewsets.ViewSet):
         validity = validated_data['validity']
         watermark = validated_data['watermark']
         second_screen = validated_data['second_screen']
+        videos = validated_data['videos']
 
         # key generation
         resp = utils.numeric_keygen(quantity)
 
         with transaction.atomic():
             # save key
-            video_models.KeyStorage.objects.bulk_create(
-                [
-                    video_models.KeyStorage(
-                        key=i['key'],
-                        time_stamp=i['time_stamp'],
-                        product=product,
-                        expires_at=expires_at,
-                        validity=validity,
-                        watermark=watermark,
-                        second_screen=second_screen
-                    ) for i in resp
-                ]
-            )
+            for i in resp:
+                instance = video_models.KeyStorage.objects.create(
+                    key=i['key'],
+                    time_stamp=i['time_stamp'],
+                    product=product,
+                    expires_at=expires_at,
+                    validity=validity,
+                    watermark=watermark,
+                    second_screen=second_screen
+                )
+                if bool(videos):
+                    instance.videos.set(videos)
+
         return Response({"message": "Serial key(s) generated successfully"}, status=status.HTTP_200_OK)
 
     @action(
@@ -159,18 +160,22 @@ class VideoViewSet(viewsets.ViewSet):
         product = validated_data['product']
 
         with transaction.atomic():
-            video_models.Video.objects.bulk_create(
-                [
-                    video_models.Video(
-                        product=product,
-                        name=i['name'],
-                        file_extension=i['extension'],
-                        file_size=i['size'],
-                        duration=i['duration'],
-                    ) for i in file_list
-                ]
-            )
-            return Response({"message": "Video(s) added successfully"}, status=status.HTTP_200_OK)
+            data = []
+            for i in file_list:
+                instance = video_models.Video.objects.create(
+                    product=product,
+                    name=i['name'],
+                    file_extension=i['extension'],
+                    file_size=i['size'],
+                    duration=i['duration'],
+                )
+                data.append({
+                    "video_id": str(instance.id),
+                    "file_path": i['file_path'],
+                    "name": instance.name
+                })
+
+            return Response({"message": data}, status=status.HTTP_200_OK)
 
 
 class ProductViewSet(viewsets.ModelViewSet):

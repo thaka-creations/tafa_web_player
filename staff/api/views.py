@@ -43,3 +43,18 @@ class SearchProductView(APIView):
                 qs = video_models.Product.objects.filter(name__icontains=param)
 
         return JsonResponse({"results": serializers.SearchProductSerializer(qs, many=True).data})
+
+
+class SearchVideoView(APIView):
+    def get(self, request):
+        param = self.request.GET.get("q")
+        product_id = self.request.GET.get("product_id")
+        if not product_id:
+            qs = video_models.Video.objects.none()
+        else:
+            if not param:
+                qs = video_models.Video.objects.filter(product__id=product_id)
+            else:
+                qs = video_models.Video.objects.filter(
+                    name__icontains=param, product__id=product_id)
+        return JsonResponse({"results": serializers.SearchVideoSerializer(qs, many=True).data})

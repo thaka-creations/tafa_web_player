@@ -10,6 +10,7 @@ router.register('product/content', staff_views.ProductContentViewSet, basename='
 
 urlpatterns = [
     path('search-product', staff_views.SearchProductView.as_view(), name='search-product'),
+    path('search-videos', staff_views.SearchVideoView.as_view(), name='search-videos'),
 ]
 
 urlpatterns += router.urls

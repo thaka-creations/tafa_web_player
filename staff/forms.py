@@ -1,5 +1,5 @@
 from django import forms
-from video.models import Product
+from video.models import Product, Video
 
 
 class GenerateKeyForm(forms.Form):
@@ -29,6 +29,12 @@ class GenerateKeyForm(forms.Form):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
+    videos = forms.MultipleChoiceField(
+        label='Access Status',
+        required=False,
+        choices=[('all', 'All Videos')],
+        initial='all',
+        widget=forms.SelectMultiple(attrs={'class': 'form-control shadow-none rounded-0 mb-2 videos-selector'}))
 
 
 class CreateProductForm(forms.ModelForm):

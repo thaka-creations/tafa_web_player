@@ -10,6 +10,7 @@ from video.models import Product, KeyStorage
 
 # key generation
 # generate a unique key
+# generate aes (advcanced encryption standard) key
 def keygen():
     try:
         key = Fernet.generate_key()

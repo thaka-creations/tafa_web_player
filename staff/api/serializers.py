@@ -83,6 +83,12 @@ class SearchProductSerializer(serializers.ModelSerializer):
         return obj.name + " (" + str(obj.id) + ")"
 
 
+class SearchVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = video_models.Video
+        fields = ['id', 'name']
+
+
 class ListProductContentSerializer(serializers.ModelSerializer):
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()

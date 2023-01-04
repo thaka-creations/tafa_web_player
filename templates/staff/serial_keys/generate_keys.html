@@ -32,7 +32,7 @@
 
                     {{form}}
 
-                    <button class="btn btn-primary rounded-0 shadow-none" type="submit">
+                    <button class="btn btn-primary rounded-0 shadow-none mt-3" type="submit">
                         Generate
                     </button>
 
@@ -49,7 +49,8 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script>
-    $(".products-select").select2({
+    $(document).ready(function(){
+        $(".products-select").select2({
             placeholder: "Select a product",
             ajax: {
                 url: "/api/v1/datatables/search-product",
@@ -72,8 +73,48 @@
 
                 cache: true
             },
-    }
-    );
+        });
+
+
+        $('.videos-selector').select2({
+            placeholder: "Select a video",
+            ajax: {
+                url: "/api/v1/datatables/search-videos",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        product_id: $('.products-select').val()
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            let new_list = []
+                            for (let i = 0; i < item.length; i++) {
+                                new_list.push({
+                                    id: item[i].id,
+                                    text: item[i].name
+                                })
+                            }
+                            return new_list
+                        })
+                    };
+                },
+
+                cache: true
+            },
+        });
+
+        $('.videos-selector').on('select2:select', function(e) {
+            // Check if the selected option is not "all"
+            if (e.params.data.id !== "all") {
+                // Remove the "all" option from the dropdown
+                $('.videos-selector').find('option[value="all"]').remove();
+            }
+        });
+    });
 </script>
 <script>
     // on closure of sweetalert, reload the page

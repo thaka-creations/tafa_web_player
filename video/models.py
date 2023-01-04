@@ -54,6 +54,7 @@ class KeyStorage(BaseModel):
     expires_at = models.DateField(null=True, blank=True)
     validity = models.CharField(max_length=1000, null=True, blank=True)
     watermark = models.TextField(null=True, blank=True)
+    videos = models.ManyToManyField('Video', related_name='video_keys')
 
     def __str__(self):
         return self.key

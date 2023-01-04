@@ -24,11 +24,12 @@ class KeyDetailSerializer(serializers.ModelSerializer):
     encryption_key = serializers.SerializerMethodField()
     product_name = serializers.SerializerMethodField()
     product_id = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
 
     class Meta:
         model = KeyStorage
         fields = ['key', 'encryption_key', 'watermark', 'activated', 'expires_at', 'second_screen', 'product_name',
-                  'product_id']
+                  'product_id', 'videos']
 
     @staticmethod
     def get_encryption_key(obj):
@@ -47,6 +48,12 @@ class KeyDetailSerializer(serializers.ModelSerializer):
             return obj.product.id
         except AttributeError:
             return None
+
+    @staticmethod
+    def get_videos(obj):
+        if not obj.videos.exists():
+            return "all"
+        return list(obj.videos.values_list('id', flat=True))
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -80,6 +87,7 @@ class NumericKeyGenSerializer(serializers.Serializer):
     validity = serializers.ChoiceField(choices=validity_choices, required=True)
     watermark = serializers.CharField(allow_blank=True, allow_null=True, required=True)
     second_screen = serializers.BooleanField(default=True)
+    videos = serializers.ListField(child=serializers.CharField(), required=True)
 
     def validate(self, attrs):
         try:
@@ -93,7 +101,16 @@ class NumericKeyGenSerializer(serializers.Serializer):
         else:
             expires_at = datetime.now() + timedelta(days=int(attrs['validity']))
             expires_at = expires_at.strftime('%Y-%m-%d')
-        attrs.update({'expires_at': expires_at, 'product': product})
+
+        # validate videos
+        videos = attrs['videos']
+        if videos == ['all']:
+            videos = None
+        else:
+            videos = Video.objects.filter(id__in=videos)
+            if len(videos) != len(attrs['videos']):
+                raise serializers.ValidationError('Some of the videos do not exist')
+        attrs.update({'expires_at': expires_at, 'product': product, 'videos': videos})
         return attrs
 
 
@@ -125,6 +142,7 @@ class VideoFileSerializer(serializers.Serializer):
     size = serializers.CharField(required=True)
     extension = serializers.CharField(required=True)
     duration = serializers.CharField(required=True, allow_blank=True, allow_null=True)
+    file_path = serializers.CharField(required=True)
 
 
 class CreateVideoSerializer(serializers.Serializer):
