@@ -155,3 +155,20 @@ class SystemAuthentication(authentication.BaseAuthentication):
         return user, token
 
 
+def verify_otp(otp, send_to):
+    url = "https://tafa.co.ke/api/v1/mfa/otp/verify"
+    payload = {
+        "otp": otp,
+        "send_to": send_to
+    }
+    try:
+        response = requests.post(url, json=payload)
+    except requests.exceptions.ConnectionError:
+        return False, "Connection Error"
+
+    if response.status_code == 200:
+        return True, "OTP Verified"
+    else:
+        return False, response.json()['message']
+
+
