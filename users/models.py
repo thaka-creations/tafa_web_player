@@ -22,11 +22,10 @@ class BaseModel(models.Model):
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=255, unique=True)
+    username = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField(unique=True, blank=True, null=True)
     phone = models.CharField(max_length=255, blank=True, null=True)
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
