@@ -5,6 +5,7 @@ from . import manager
 
 # Create your models here.
 ACCOUNT_STATUS = [
+    ("REGISTRATION", "REGISTRATION"),
     ("ACTIVE", "ACTIVE"),
     ("DEACTIVATED", "DEACTIVATED"),
     ("SUSPENDED", "SUSPENDED"),
@@ -31,7 +32,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     email_verified = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    account_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+    account_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="REGISTRATION")
 
     USERNAME_FIELD = "username"
 
@@ -55,7 +56,7 @@ class PublicUser(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="public_user")
     school = models.CharField(max_length=1000, blank=True, null=True)
     county = models.CharField(max_length=255, blank=True, null=True)
-    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="REGISTRATION")
 
 
 class Staff(BaseModel):
