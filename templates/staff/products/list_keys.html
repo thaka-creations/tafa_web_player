@@ -1,0 +1,130 @@
+{% extends "staff/partials/theme.html" %}
+
+{% block styles %}
+<style>
+    .btn-generate-serial-keys{
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"> <a href="/web/admin/products">Products</a></li>
+            <li class="breadcrumb-item"><a href="/web/admin/retrieve-product/{{product.id}}">Product Content</a></li>
+            <li class="breadcrumb-item active">{{product.name.title}} Serial Keys</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="list-serial-keys">
+
+    <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>{{product.name.title}} Serial Keys</span>
+            <button class="btn btn-primary btn-generate-serial-keys rounded-0 shadow-none"
+                    onclick="window.location='/web/admin/serial-keys/generate'">
+                Generate Key(s)
+            </button>
+        </div>
+
+        <div class="card-body pt-2">
+            <div class="table-responsive">
+                <table class="list-serial-keys-table table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            #
+                        </th>
+                        <th class="text-center">
+                            Product
+                        </th>
+                        <th class="text-center">
+                            Product Name
+                        </th>
+                        <th class="text-center">
+                            Serial Key
+                        </th>
+                        <th class="text-center">
+                            Status
+                        </th>
+                        <th class="text-center">
+                            Validity
+                        </th>
+                        <th class="text-center">
+                            Access
+                        </th>
+                        <th class="text-center">
+                            Date generated
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $('.list-serial-keys-table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "/api/v1/datatables/serial-keys?request_id={{product.id}}&format=datatables",
+                "type": "GET"
+            },
+            "columns": [
+                {
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center',
+                },
+                {
+                    "data": "product",
+                    "name": "product__id",
+                    "className": "text-center",
+                },
+                {
+                    "data": "product_name",
+                    "name": "product__name",
+                    "className": "text-center",
+                },
+                {
+                    "data": "key",
+                    "name": "key",
+                    "className": "text-center",
+                },
+                {
+                    "data": "status",
+                    "className": "text-center",
+                },
+                {
+                    "data": "validity",
+                    "className": "text-center",
+                },
+                {
+                    "data": "access_status",
+                    "className": "text-center",
+                },
+                {
+                    "data": "created_at",
+                    "className": "text-center",
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

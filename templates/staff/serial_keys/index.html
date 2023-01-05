@@ -36,6 +36,9 @@
                         <thead>
                             <tr>
                                 <th class="text-center">
+                                    #
+                                </th>
+                                <th class="text-center">
                                     Product
                                 </th>
                                 <th class="text-center">
@@ -49,6 +52,9 @@
                                 </th>
                                 <th class="text-center">
                                     Validity
+                                </th>
+                                <th class="text-center">
+                                    Access
                                 </th>
                                 <th class="text-center">
                                     Date generated
@@ -77,6 +83,14 @@
                 },
                 "columns": [
                     {
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        },
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                    },
+                    {
                         "data": "product",
                         "name": "product__id",
                         "className": "text-center",
@@ -97,6 +111,10 @@
                     },
                     {
                         "data": "validity",
+                        "className": "text-center",
+                    },
+                    {
+                        "data": "access_status",
                         "className": "text-center",
                     },
                     {

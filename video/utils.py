@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import random
 from datetime import datetime
 from cryptography.fernet import Fernet
@@ -34,7 +35,14 @@ def numeric_keygen(quantity):
     key_list = []
     for i in range(quantity):
         time_stamp = str(datetime.timestamp(datetime.now()))
-        key = time_stamp.replace('.', '')
+        time_list = time_stamp.split('.')
+        random_num = random.randint(0, 999)
+        random_str = str(random_num).zfill(3)
+        data = time_list[0] + random_str
+        hasher = hashlib.sha256()
+        hasher.update(data.encode())
+        key = int(hasher.hexdigest(), 16) % 1000000000000
+        key = str(key).zfill(12)
         if KeyStorage.objects.filter(key=key).exists():
             numeric_keygen(quantity)
         key_list.append({"key": key, "time_stamp": time_stamp})

@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 
 from rest_framework import serializers
 from video import models as video_models
@@ -35,11 +36,12 @@ class ListSerialKeySerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
+    access_status = serializers.SerializerMethodField()
 
     class Meta:
         model = video_models.KeyStorage
         fields = ['DT_RowId', 'DT_RowAttr', 'key', 'product', 'product_name', 'validity', 'status',
-                  'created_at']
+                  'created_at', 'access_status']
 
     @staticmethod
     def get_DT_RowId(obj):
@@ -69,6 +71,13 @@ class ListSerialKeySerializer(serializers.ModelSerializer):
     @staticmethod
     def get_created_at(obj):
         return obj.created_at.strftime('%b %d, %Y %H:%M:%S')
+
+    @staticmethod
+    def get_access_status(obj):
+        if obj.videos.exists():
+            return 'Selected'
+        else:
+            return 'All'
 
 
 class SearchProductSerializer(serializers.ModelSerializer):

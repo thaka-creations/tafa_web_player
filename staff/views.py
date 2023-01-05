@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.views import View
 from django.shortcuts import render, redirect
 from . import forms
@@ -13,6 +14,7 @@ class ListProductView(View):
     page = "products"
 
     def get(self, request):
+        print("datetime", datetime.now())
         return render(self.request, 'staff/products/index.html', {'page': self.page})
 
 
@@ -40,9 +42,22 @@ class RetrieveProductView(View):
             instance = video_models.Product.objects.get(id=pk)
         except video_models.Product.DoesNotExist:
             # return render(self.request, 'staff/404.html')
-            return redirect('staff:products')
+            return redirect('/web/admin/products')
 
         return render(self.request, 'staff/products/detail.html', {'page': self.page, 'product': instance})
+
+
+class ListProductSerialKeyView(View):
+    page = "keys"
+
+    def get(self, request, pk):
+        try:
+            instance = video_models.Product.objects.get(id=pk)
+        except video_models.Product.DoesNotExist:
+            # return render(self.request, 'staff/404.html')
+            return redirect('/web/admin/products')
+
+        return render(self.request, 'staff/products/list_keys.html', {'page': self.page, 'product': instance})
 
 
 class CreateProductView(View):

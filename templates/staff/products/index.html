@@ -33,6 +33,7 @@
                     <table class="list-products-tables table table-striped table-hover">
                         <thead>
                             <tr>
+                                <th class="text-center">#</th>
                                 <th class="text-center">Code</th>
                                 <th class="text-center">Name</th>
                                 <th class="text-center">Title</th>
@@ -62,8 +63,16 @@
                 },
                 "columns": [
                     {
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        },
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                    },
+                    {
                         "data": "id",
-                        "className": "text-center"
+                        "className": "text-center",
                     },
                     {
                         "data": "name",
