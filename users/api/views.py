@@ -2,9 +2,10 @@ import requests
 from django.contrib.auth import authenticate
 from django.db import transaction
 from oauth2_provider.models import get_application_model
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from users.api import serializers as user_serializers
 from users import models as user_models
 from users import utils as user_utils
@@ -73,8 +74,9 @@ class VerifyOtpCodeView(APIView):
         return Response({"message": response}, status=status.HTTP_200_OK)
 
 
-class LoginView(APIView):
-    def post(self, request):
+class AuthenticationViewSet(viewsets.ViewSet):
+    @action(methods=['POST'], detail=False)
+    def login(self, request):
         serializer = user_serializers.LoginViewSerializer(
             data=self.request.data, many=False
         )
@@ -125,6 +127,17 @@ class LoginView(APIView):
         }
 
         return Response({"message": userinfo}, status=status.HTTP_200_OK)
+
+    @action(methods=["POST"], detail=False)
+    def logout(self, request):
+        authorization_token = request.headers.get('Authorization', b'')
+        auth_token = authorization_token.split()
+        logged_in_user = request.user
+        status_code, resp = oauth2_user.logout(auth_token[1], logged_in_user)
+
+        if not status_code:
+            return Response({"message": resp}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": resp}, status=status.HTTP_200_OK)
 
 
 
