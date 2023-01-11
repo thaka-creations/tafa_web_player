@@ -70,13 +70,20 @@ class VideoViewSet(viewsets.ViewSet):
         if not serializer.is_valid():
             return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        qs = video_models.KeyStorage.objects.filter(key=serializer.validated_data['key'])
-
-        if not qs.exists():
+        validated_data = serializer.validated_data
+        try:
+            instance = video_models.KeyStorage.objects.get(key=validated_data['key'])
+        except video_models.KeyStorage.DoesNotExist:
             return Response({"message": "Invalid key"}, status=status.HTTP_400_BAD_REQUEST)
 
-        qs.update(activated=True)
-        instance = qs.first()
+        if instance.activated:
+            return Response({"message": "Key has already been activated"}, status=status.HTTP_400_BAD_REQUEST)
+
+        instance.activated = True
+        instance.client = request.user
+        instance.app_id = validated_data['app_id']
+        instance.save()
+
         return Response({"message": video_serializers.KeyDetailSerializer(instance).data},
                         status=status.HTTP_200_OK)
 

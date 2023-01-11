@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from users import models as user_models
 
 
 # Create your models here.
@@ -41,6 +42,14 @@ class Video(BaseModel):
         ordering = ['-created_at']
 
 
+class AppModel(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    serial_number = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return str(self.id)
+
+
 class KeyStorage(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     key = models.CharField(unique=True, max_length=1000)
@@ -55,17 +64,12 @@ class KeyStorage(BaseModel):
     validity = models.CharField(max_length=1000, null=True, blank=True)
     watermark = models.TextField(null=True, blank=True)
     videos = models.ManyToManyField('Video', related_name='video_keys')
+    client = models.ForeignKey(user_models.User, on_delete=models.CASCADE,
+                               related_name='client_keys', blank=True, null=True)
+    app = models.ForeignKey(AppModel, on_delete=models.CASCADE, related_name='app_keys', blank=True, null=True)
 
     def __str__(self):
         return self.key
 
     class Meta:
         ordering = ['-created_at']
-
-
-class AppModel(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    serial_number = models.CharField(max_length=1000)
-
-    def __str__(self):
-        return str(self.id)
