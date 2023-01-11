@@ -6,22 +6,20 @@ from phonenumber_field.phonenumber import to_python
 
 
 class RegisterUserSerializer(serializers.Serializer):
-    username = serializers.EmailField(required=True)  # username is email
+    email = serializers.EmailField(required=True)  # username is email
     first_name = serializers.CharField(required=True, trim_whitespace=True)
     last_name = serializers.CharField(required=True, trim_whitespace=True)
-    middle_name = serializers.CharField(required=True, trim_whitespace=True,
-                                        allow_blank=True, allow_null=True)
     phone = serializers.CharField(required=True, trim_whitespace=True)
     password = serializers.CharField(required=True, trim_whitespace=True)
     confirm_password = serializers.CharField(required=True, trim_whitespace=True)
 
     def validate(self, attrs):
-        username = attrs['username']
+        email = attrs['email']
         phone = attrs['phone']
         password = attrs['password']
         confirm_password = attrs['confirm_password']
 
-        if user_models.User.objects.filter(username=username).exists():
+        if user_models.User.objects.filter(username=email).exists():
             raise serializers.ValidationError("User with email already exists")
 
         if user_models.User.objects.filter(phone=phone, phone_verified=True).exists():
@@ -39,25 +37,32 @@ class RegisterUserSerializer(serializers.Serializer):
             raise serializers.ValidationError("Password do not match")
 
         attrs.pop('confirm_password')
+        attrs['username'] = attrs.pop('email')
+
         return attrs
 
 
-class VerifyOtpCodeSerializer(serializers.Serializer):
+class ResendOtpCodeSerializer(serializers.Serializer):
     send_to = serializers.CharField(required=True, trim_whitespace=True)
-    otp = serializers.CharField(required=True, trim_whitespace=True)
 
     def validate(self, attrs):
-        phone = attrs['send_to']
-        otp = attrs['otp']
+        send_to = attrs['send_to']
 
         try:
-            user = user_models.User.objects.get(phone=phone, phone_verified=False)
+            user = user_models.User.objects.get(id=send_to)
         except user_models.User.DoesNotExist:
-            raise serializers.ValidationError("User with phone number does not exist")
+            raise serializers.ValidationError("User does not exist")
 
-        if not user.otp_code == otp:
-            raise serializers.ValidationError("Invalid OTP code")
+        attrs['phone'] = user.phone
 
+        return attrs
+
+
+class VerifyOtpCodeSerializer(ResendOtpCodeSerializer):
+    code = serializers.CharField(required=True, trim_whitespace=True)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
         return attrs
 
 

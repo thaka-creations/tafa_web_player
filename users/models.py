@@ -26,7 +26,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     username = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    middle_name = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=255, blank=True, null=True)
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)

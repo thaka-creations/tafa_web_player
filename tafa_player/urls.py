@@ -23,6 +23,7 @@ api_version = "v1"
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path(f"api/{api_version}/", include("video.urls")),
+    path(f"api/{api_version}/users/", include('users.api.urls')),
     path(f"api/{api_version}/datatables/", include("staff.api.urls")),
     path("web/admin/", include("staff.urls")),
 ]

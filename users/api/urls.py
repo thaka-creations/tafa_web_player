@@ -8,4 +8,7 @@ router.register(r'auth', user_views.AuthenticationViewSet, basename='auth')
 urlpatterns = [
     path('register', user_views.RegisterUserView.as_view(), name='register'),
     path('verify-otp', user_views.VerifyOtpCodeView.as_view(), name='verify-otp'),
+    path('resend-otp', user_views.ResendOtpCodeView.as_view(), name='resend-otp'),
 ]
+
+urlpatterns += router.urls

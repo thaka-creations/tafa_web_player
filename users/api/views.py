@@ -19,7 +19,7 @@ class RegisterUserView(APIView):
     def post(request):
         serializer = user_serializers.RegisterUserSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": user_utils.format_error(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
         password = validated_data.pop('password')
@@ -36,7 +36,7 @@ class RegisterUserView(APIView):
             # create oauth2 user
             oauth2_user.create_application_user(user)
 
-            url = 'https://tafa.co.ke/mfa/otp/generate'
+            url = 'https://tafa.co.ke/api/v1/mfa/otp/generate'
             payload = {
                 "expiry_time": 600,
                 "send_to": user.phone
@@ -53,7 +53,7 @@ class RegisterUserView(APIView):
                 return Response({"message": "An error occurred. Try again later"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({"message": "Successfully registered. Otp has been sent to your phone"},
+            return Response({"message": str(user.id)},
                             status=status.HTTP_200_OK)
 
 
@@ -61,17 +61,50 @@ class VerifyOtpCodeView(APIView):
     def post(self, request):
         serializer = user_serializers.VerifyOtpCodeSerializer(data=self.request.data)
         if not serializer.is_valid():
-            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": user_utils.format_error(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
         phone = validated_data['phone']
         code = validated_data['code']
+        user = validated_data['send_to']
         status_code, response = user_utils.verify_otp(code, phone)
 
         if not status_code:
             return Response({"message": response}, status=status.HTTP_400_BAD_REQUEST)
 
+        with transaction.atomic():
+            user.phone_verified = True
+            user.save()
+
         return Response({"message": response}, status=status.HTTP_200_OK)
+
+
+class ResendOtpCodeView(APIView):
+    def post(self, request):
+        serializer = user_serializers.ResendOtpCodeSerializer(data=self.request.data)
+        if not serializer.is_valid():
+            return Response({"message": user_utils.format_error(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        phone = validated_data['phone']
+
+        url = 'https://tafa.co.ke/api/v1/mfa/otp/generate'
+        payload = {
+            "expiry_time": 600,
+            "send_to": phone
+        }
+
+        try:
+            response = requests.post(url, json=payload)
+        except requests.exceptions.ConnectionError:
+            return Response({"message": "Could not connect to server. Try again later"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if response.status_code != 200:
+            return Response({"message": "An error occurred. Try again later"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "OTP code sent successfully"}, status=status.HTTP_200_OK)
 
 
 class AuthenticationViewSet(viewsets.ViewSet):
@@ -94,7 +127,8 @@ class AuthenticationViewSet(viewsets.ViewSet):
             return Response({"message": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not user.phone_verified:
-            return Response({"message": "Verify phone number first"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Verify phone number first", "user": str(user.id)},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if user.account_status != "ACTIVE":
             return Response({"message": "Your account has been {}".format(user.account_status.lower())},
