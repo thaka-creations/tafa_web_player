@@ -176,6 +176,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+ACCESS_TOKEN_EXPIRY = os.environ.get('ACCESS_TOKEN_EXPIRY')
+
 SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://'
                     + os.environ.get('ACL_SERVICE') + os.environ.get('API_VERSION'),

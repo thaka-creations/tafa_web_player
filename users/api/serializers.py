@@ -52,7 +52,7 @@ class ResendOtpCodeSerializer(serializers.Serializer):
             user = user_models.User.objects.get(id=send_to)
         except user_models.User.DoesNotExist:
             raise serializers.ValidationError("User does not exist")
-
+        attrs['send_to'] = user
         attrs['phone'] = user.phone
 
         return attrs

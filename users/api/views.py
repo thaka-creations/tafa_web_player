@@ -74,7 +74,12 @@ class VerifyOtpCodeView(APIView):
 
         with transaction.atomic():
             user.phone_verified = True
+            user.account_status = "ACTIVE"
             user.save()
+
+            public_user = user.public_user
+            public_user.profile_status = "ACTIVE"
+            public_user.save()
 
         return Response({"message": response}, status=status.HTTP_200_OK)
 
@@ -137,6 +142,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
         try:
             instance = get_application_model().objects.get(user=user)
         except get_application_model().DoesNotExist:
+            print("these")
             return Response({"message": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
 
         dt = {
@@ -148,8 +154,10 @@ class AuthenticationViewSet(viewsets.ViewSet):
         }
 
         response = oauth2_user.get_client_details(dt)
+        print(response)
 
         if not response:
+            print("not this")
             return Response({"message": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
 
         userinfo = {
