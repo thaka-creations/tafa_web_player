@@ -2,11 +2,16 @@
 
 {% block styles %}
 <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css'>
+<style>
+    .h5{
+        color: #5968B0!important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
     <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1>Products</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
@@ -18,13 +23,14 @@
 
     <section class="create-product">
         <div class="card shadow w-75">
-            <div class="card-header">
+            <div class="card-header h5">
                 Create Product
             </div>
             <div class="card-body pt-2">
                 <form action="/api/v1/products" method="POST" class="create-product-fm">
                     {% csrf_token %}
                     {{form}}
+                    <input type="hidden" name="client" value="{{request.user.id}}">
                     <button class="btn btn-primary rounded-0 shadow-none" type="submit">
                         Create Product
                     </button>
@@ -69,7 +75,7 @@
                    displayMessage(data.message, "success" , "Success")
                },
                error: function(err){
-                   displayMessage("Title and short description required", "error", "Error")
+                   displayMessage(err['responseJSON'], "error", "Error")
                }
            });
        });

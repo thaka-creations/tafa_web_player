@@ -5,12 +5,15 @@
     .list-products-tables tbody > tr{
         cursor: pointer;
     }
+    .h5{
+        color: #5968B0!important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
     <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1>Products</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
@@ -21,7 +24,7 @@
 
     <section class="list-products">
         <div class="card shadow">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center h5">
                 <span>Products</span>
                 <button class="btn btn-primary rounded-0 shadow-none"
                 onclick="window.location='/web/admin/create-product'">Add Product</button>

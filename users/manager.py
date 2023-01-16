@@ -9,6 +9,7 @@ class UserManager(BaseUserManager):
         user = self.model(
             username=username,
             is_staff=True,
+            account_status="ACTIVE",
         )
         user.set_password(password)
         user.save(using=self.db)

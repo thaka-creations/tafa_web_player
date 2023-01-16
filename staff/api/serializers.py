@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 
 from rest_framework import serializers
 from video import models as video_models
+from video.models import Video
 
 
 class ListProductSerializer(serializers.ModelSerializer):
@@ -123,4 +124,35 @@ class ListProductContentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_created_at(obj):
         return obj.created_at.strftime('%b %d, %Y %H:%M:%S')
+
+
+class UpdateSerialKeyViewSerializer(serializers.Serializer):
+    validity = serializers.CharField(required=False)
+    watermark = serializers.CharField(required=False)
+    videos = serializers.ListField(required=False)
+    status = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        if "validity" in attrs.keys():
+            validity = attrs["validity"]
+            # expires at
+            if validity == 'Unlimited':
+                expires_at = None
+            else:
+                expires_at = datetime.now() + timedelta(days=int(validity))
+                expires_at = expires_at.strftime('%Y-%m-%d')
+            attrs['expires_at'] = expires_at
+
+        if "videos" in attrs.keys():
+            videos = attrs["videos"]
+            if videos == ['all']:
+                qs = None
+            else:
+                qs = Video.objects.filter(id__in=videos)
+                if len(qs) != len(videos):
+                    raise serializers.ValidationError("Some of the videos do not exist")
+            attrs['videos'] = qs
+
+        return attrs
+
 

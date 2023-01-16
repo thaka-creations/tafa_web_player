@@ -154,7 +154,6 @@ class AuthenticationViewSet(viewsets.ViewSet):
         }
 
         response = oauth2_user.get_client_details(dt)
-        print(response)
 
         if not response:
             print("not this")

@@ -65,3 +65,22 @@ class SearchVideoView(APIView):
                 qs = video_models.Video.objects.filter(
                     name__icontains=param, product__id=product_id)
         return JsonResponse({"results": serializers.SearchVideoSerializer(qs, many=True).data})
+
+
+class UpdateSerialKeyView(APIView):
+    def post(self, request, pk):
+        serializer = serializers.UpdateSerialKeyViewSerializer(data=self.request.data)
+        if not serializer.is_valid():
+            return JsonResponse({"message": serializer.errors}, status=400)
+
+        validated_data = serializer.validated_data
+        try:
+            key = video_models.KeyStorage.objects.get(key=pk)
+        except video_models.KeyStorage.DoesNotExist:
+            return JsonResponse({"message": "Invalid key"}, status=400)
+
+        if key.status == "REVOKED":
+            return JsonResponse({"message": "Key is already revoked"}, status=400)
+        key.__dict__.update(validated_data)
+        key.save()
+        return JsonResponse({"message": "Key updated successfully"}, status=200)

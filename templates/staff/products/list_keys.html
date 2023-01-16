@@ -5,12 +5,15 @@
     .btn-generate-serial-keys{
         cursor: pointer;
     }
+    .h5{
+        color: #5968B0!important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="pagetitle">
-    <h1>Dashboard</h1>
+    <h1>Serial Keys</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
@@ -24,7 +27,7 @@
 <section class="list-serial-keys">
 
     <div class="card shadow">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header d-flex justify-content-between align-items-center h5">
             <span>{{product.name.title}} Serial Keys</span>
             <button class="btn btn-primary btn-generate-serial-keys rounded-0 shadow-none"
                     onclick="window.location='/web/admin/serial-keys/generate'">

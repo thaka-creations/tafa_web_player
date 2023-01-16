@@ -1,7 +1,7 @@
 import base64
 import hashlib
 import random
-from datetime import datetime
+import datetime
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -34,7 +34,7 @@ def keygen():
 def numeric_keygen(quantity):
     key_list = []
     for i in range(quantity):
-        time_stamp = str(datetime.timestamp(datetime.now()))
+        time_stamp = str(datetime.datetime.timestamp(datetime.datetime.now()))
         time_list = time_stamp.split('.')
         random_num = random.randint(0, 999)
         random_str = str(random_num).zfill(3)
@@ -129,3 +129,8 @@ def add_watermark():
     except Exception as e:
         print(e)
         return False
+
+
+def get_date():
+    return datetime.date.today()
+

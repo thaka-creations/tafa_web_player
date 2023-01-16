@@ -2,15 +2,18 @@
 
 {% block styles %}
 <style>
-    .btn-generate-serial-keys{
+    .btn-generate-serial-keys, .list-serial-keys-table tbody > tr{
         cursor: pointer;
+    }
+    .h5{
+        color: #5968B0!important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
     <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1>Serial Keys</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/web/admin/dashboard">Dashboard</a></li>
@@ -22,7 +25,7 @@
     <section class="list-serial-keys">
 
         <div class="card shadow">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center h5">
                 <span>Serial Keys</span>
                 <button class="btn btn-primary btn-generate-serial-keys rounded-0 shadow-none"
                 onclick="window.location='/web/admin/serial-keys/generate'">
@@ -122,6 +125,18 @@
                         "className": "text-center",
                     }
                 ]
+            });
+
+            // add tooltip
+            $('.list-serial-keys-table tbody').each(function() {
+                $(this).attr('title', 'Click to view or update serial key details');
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            //row clickable
+            $('.list-serial-keys-table tbody').on('click', 'tr', function(){
+                let data = $('.list-serial-keys-table').DataTable().row(this).data();
+                window.location.href = "/web/admin/retrieve-serial-key/" + data.key;
             });
         });
     </script>

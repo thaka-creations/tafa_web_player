@@ -182,3 +182,6 @@ SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://'
                     + os.environ.get('ACL_SERVICE') + os.environ.get('API_VERSION'),
 }
+
+LOGIN_URL = "/login"
+LOGOUT_REDIRECT_URL = "/login"

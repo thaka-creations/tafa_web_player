@@ -19,6 +19,8 @@ class Product(BaseModel):
     short_description = models.CharField(max_length=1000, blank=True, null=True)
     long_description = models.TextField(blank=True, null=True)
     encryptor = models.CharField(max_length=1000, null=True, blank=True, unique=True)
+    client = models.ForeignKey(user_models.User, on_delete=models.CASCADE, related_name="products",
+                               null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -45,6 +47,7 @@ class Video(BaseModel):
 class AppModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     serial_number = models.CharField(max_length=1000)
+    model_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
@@ -64,8 +67,12 @@ class KeyStorage(BaseModel):
     validity = models.CharField(max_length=1000, null=True, blank=True)
     watermark = models.TextField(null=True, blank=True)
     videos = models.ManyToManyField('Video', related_name='video_keys')
+    user = models.ForeignKey(user_models.User, on_delete=models.CASCADE,
+                             related_name='user_keys', null=True, blank=True)
     client = models.ForeignKey(user_models.User, on_delete=models.CASCADE,
                                related_name='client_keys', blank=True, null=True)
+    date_activated = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=1000, null=True, blank=True)
     app = models.ForeignKey(AppModel, on_delete=models.CASCADE, related_name='app_keys', blank=True, null=True)
 
     def __str__(self):

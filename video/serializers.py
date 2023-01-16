@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from rest_framework import serializers
-
+from users import models as user_models
 from video.models import AppModel, KeyStorage, Product, Video
 
 
@@ -64,9 +64,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'encryptor', 'encryption_key', 'title', 'short_description', 'long_description']
+        fields = ['id', 'name', 'encryptor', 'encryption_key', 'title', 'short_description', 'long_description',
+                  'client']
         extra_kwargs = {
-            'id': {'read_only': True}, 'encryption_key': {'read_only': True}}
+            'id': {'read_only': True}, 'encryption_key': {'read_only': True}, 'client': {'write_only': True}}
 
     @staticmethod
     def get_encryption_key(obj):
@@ -89,6 +90,7 @@ class NumericKeyGenSerializer(serializers.Serializer):
     watermark = serializers.CharField(allow_blank=True, allow_null=True, required=True)
     second_screen = serializers.BooleanField(default=True)
     videos = serializers.ListField(child=serializers.CharField(), required=True)
+    user = serializers.UUIDField(required=True)
 
     def validate(self, attrs):
         try:
@@ -111,7 +113,13 @@ class NumericKeyGenSerializer(serializers.Serializer):
             videos = Video.objects.filter(id__in=videos)
             if len(videos) != len(attrs['videos']):
                 raise serializers.ValidationError('Some of the videos do not exist')
-        attrs.update({'expires_at': expires_at, 'product': product, 'videos': videos})
+
+        try:
+            user = user_models.User.objects.get(id=attrs['user'])
+        except user_models.User.DoesNotExist:
+            raise serializers.ValidationError('Client does not exist')
+
+        attrs.update({'expires_at': expires_at, 'product': product, 'videos': videos, 'user': user})
         return attrs
 
 

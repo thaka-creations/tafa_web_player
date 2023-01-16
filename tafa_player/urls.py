@@ -27,6 +27,7 @@ urlpatterns = [
     path(f"api/{api_version}/users/", include('users.api.urls')),
     path(f"api/{api_version}/datatables/", include("staff.api.urls")),
     path("web/admin/", include("staff.urls")),
+    path("", include("users.urls")),
 ]
 
 if settings.DEBUG:

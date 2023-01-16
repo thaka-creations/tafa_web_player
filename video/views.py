@@ -1,8 +1,11 @@
+from django.utils import timezone
 from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from users import utils as user_utils
 
 from . import utils, serializers as video_serializers, models as video_models
 
@@ -24,9 +27,10 @@ class VideoViewSet(viewsets.ViewSet):
         url_name='keygen'
     )
     def keygen(self, request):
-        serializer = video_serializers.NumericKeyGenSerializer(data=request.data)
+        payload = request.data
+        serializer = video_serializers.NumericKeyGenSerializer(data=payload)
         if not serializer.is_valid():
-            return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": user_utils.format_error(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
         quantity = validated_data['quantity']
@@ -36,6 +40,7 @@ class VideoViewSet(viewsets.ViewSet):
         watermark = validated_data['watermark']
         second_screen = validated_data['second_screen']
         videos = validated_data['videos']
+        user = validated_data['user']
 
         # key generation
         resp = utils.numeric_keygen(quantity)
@@ -50,7 +55,8 @@ class VideoViewSet(viewsets.ViewSet):
                     expires_at=expires_at,
                     validity=validity,
                     watermark=watermark,
-                    second_screen=second_screen
+                    second_screen=second_screen,
+                    user=user
                 )
                 if bool(videos):
                     instance.videos.set(videos)
@@ -61,7 +67,8 @@ class VideoViewSet(viewsets.ViewSet):
         methods=['POST'],
         detail=False,
         url_path='activate-key',
-        url_name='activate-key'
+        url_name='activate-key',
+        permission_classes=[IsAuthenticated]
     )
     def activate_key(self, request):
         # key activation
@@ -76,12 +83,17 @@ class VideoViewSet(viewsets.ViewSet):
         except video_models.KeyStorage.DoesNotExist:
             return Response({"message": "Invalid key"}, status=status.HTTP_400_BAD_REQUEST)
 
+        if instance.expires_at < utils.get_date():
+            return Response({"message": "Key has expired"}, status=status.HTTP_400_BAD_REQUEST)
+
         if instance.activated:
             return Response({"message": "Key has already been activated"}, status=status.HTTP_400_BAD_REQUEST)
 
         instance.activated = True
+        instance.status = "ACTIVE"
         instance.client = request.user
         instance.app_id = validated_data['app_id']
+        instance.date_activated = timezone.now()
         instance.save()
 
         return Response({"message": video_serializers.KeyDetailSerializer(instance).data},
@@ -146,7 +158,7 @@ class VideoViewSet(viewsets.ViewSet):
         validated_data = payload_serializer.validated_data
 
         created, _ = video_models.AppModel.objects.get_or_create(
-            serial_number=validated_data['serial_number'])
+            serial_number=validated_data['serial_number'], model_name=validated_data['model_name'])
 
         serializer = video_serializers.AppRegisteredSerializer(created, many=False)
         return Response({"message": serializer.data}, status=status.HTTP_200_OK)
@@ -191,13 +203,16 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(user_utils.format_error(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
         resp = utils.keygen()
         if not resp:
             return Response({"message": "Error creating product"}, status=status.HTTP_400_BAD_REQUEST)
         validated_data = serializer.validated_data
-        video_models.Product.objects.create(**validated_data, encryptor=resp)
-        return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
+
+        with transaction.atomic():
+            video_models.Product.objects.create(**validated_data, encryptor=resp)
+            return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
 
 
 class ListProductVideoApiView(APIView):
