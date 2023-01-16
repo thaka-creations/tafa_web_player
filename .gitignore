@@ -137,7 +137,7 @@ dmypy.json
 .pytype/
 
 # Cython debug symbols
-cython_debug
+cython_debug/
 
 # IDE temp files
 .idea
@@ -148,12 +148,3 @@ Dockerfile.local
 docker-compose.local.yml
 local.*
 media/
-
-file.key
-nba.csv
-test.mp4
-watermark.jpeg
-watermarked_video.mp4
-playing.mp4
-playing.*
-*.mp4
