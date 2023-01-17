@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls.static import static
+from django.urls import path, include, re_path
+from django.conf.urls.static import static, serve
 from django.conf import settings
 
 api_version = "v1"
@@ -28,6 +28,7 @@ urlpatterns = [
     path(f"api/{api_version}/datatables/", include("staff.api.urls")),
     path("web/admin/", include("staff.urls")),
     path("", include("users.urls")),
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})
 ]
 
 if settings.DEBUG:
