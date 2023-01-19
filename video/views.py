@@ -203,6 +203,17 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = video_models.Product.objects.all()
     serializer_class = video_serializers.ProductSerializer
 
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(client=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
@@ -218,6 +229,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class ListProductVideoApiView(APIView):
+
     def get(self, request):
         try:
             product = video_models.Product.objects.get(id=self.request.GET.get('request_id'))
