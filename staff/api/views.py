@@ -13,6 +13,13 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ListProductSerializer
     pagination_class = DatatablesPageNumberPagination
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        client = self.request.GET.get('client', None)
+        if client:
+            qs = qs.filter(client__id=client)
+        return qs
+
 
 class SerialKeyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = video_models.KeyStorage.objects.all()
@@ -22,8 +29,11 @@ class SerialKeyViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         product_id = self.request.query_params.get('request_id')
+        client = self.request.GET.get('client', None)
         if product_id:
             queryset = queryset.filter(product__id=product_id)
+        if client:
+            queryset = queryset.filter(product__client__id=client)
         return queryset
 
 
