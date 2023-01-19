@@ -23,8 +23,8 @@ class RegisterUserSerializer(serializers.Serializer):
         if user_models.User.objects.filter(username=email).exists():
             raise serializers.ValidationError("User with email already exists")
 
-        if user_models.User.objects.filter(phone=phone, phone_verified=True).exists():
-            raise serializers.ValidationError("User with phone number already exists")
+        # if user_models.User.objects.filter(phone=phone, phone_verified=True).exists():
+        #     raise serializers.ValidationError("User with phone number already exists")
 
         try:
             phone_number = to_python(phone, "KE")

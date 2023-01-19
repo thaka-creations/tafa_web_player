@@ -158,7 +158,9 @@ class VideoViewSet(viewsets.ViewSet):
         validated_data = payload_serializer.validated_data
 
         created, _ = video_models.AppModel.objects.get_or_create(
-            serial_number=validated_data['serial_number'], model_name=validated_data['model_name'])
+            serial_number=validated_data['serial_number'], model_name=validated_data['model_name'],
+            encryptor=validated_data['encryptor']
+        )
 
         serializer = video_serializers.AppRegisteredSerializer(created, many=False)
         return Response({"message": serializer.data}, status=status.HTTP_200_OK)

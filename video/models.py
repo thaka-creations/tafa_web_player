@@ -48,6 +48,7 @@ class AppModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     serial_number = models.CharField(max_length=1000)
     model_name = models.CharField(max_length=255, blank=True, null=True)
+    encryptor = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
