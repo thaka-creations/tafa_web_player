@@ -12,6 +12,7 @@ class RegisterUserSerializer(serializers.Serializer):
     phone = serializers.CharField(required=True, trim_whitespace=True)
     password = serializers.CharField(required=True, trim_whitespace=True)
     confirm_password = serializers.CharField(required=True, trim_whitespace=True)
+    is_staff = serializers.BooleanField(default=False)
 
     def validate(self, attrs):
         email = attrs['email']

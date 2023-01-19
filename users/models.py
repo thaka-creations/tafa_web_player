@@ -61,4 +61,4 @@ class PublicUser(BaseModel):
 class Staff(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff_user")
-    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="REGISTRATION")

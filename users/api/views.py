@@ -23,6 +23,7 @@ class RegisterUserView(APIView):
 
         validated_data = serializer.validated_data
         password = validated_data.pop('password')
+        is_staff = validated_data.pop('is_staff')
 
         with transaction.atomic():
             # create user
@@ -30,8 +31,11 @@ class RegisterUserView(APIView):
             user.set_password(password)
             user.save()
 
-            # create public user
-            user_models.PublicUser.objects.create(user=user)
+            if is_staff:
+                user_models.Staff.objects.create(user=user)
+            else:
+                # create public user
+                user_models.PublicUser.objects.create(user=user)
 
             # create oauth2 user
             oauth2_user.create_application_user(user)
@@ -77,9 +81,13 @@ class VerifyOtpCodeView(APIView):
             user.account_status = "ACTIVE"
             user.save()
 
-            public_user = user.public_user
-            public_user.profile_status = "ACTIVE"
-            public_user.save()
+            # check if user is staff or public user
+            if hasattr(user, 'staff_user'):
+                user.staff_user.profile_status = "ACTIVE"
+                user.staff_user.save()
+            else:
+                user.public_user.profile_status = "ACTIVE"
+                user.public_user.save()
 
         return Response({"message": response}, status=status.HTTP_200_OK)
 
