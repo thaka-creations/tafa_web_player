@@ -29,14 +29,15 @@ class RegisterUserView(APIView):
             # create user
             user = user_models.User.objects.create(**validated_data)
             user.set_password(password)
-            user.save()
 
             if is_staff:
+                user.is_staff = True
                 user_models.Staff.objects.create(user=user)
             else:
                 # create public user
                 user_models.PublicUser.objects.create(user=user)
 
+            user.save()
             # create oauth2 user
             oauth2_user.create_application_user(user)
 
