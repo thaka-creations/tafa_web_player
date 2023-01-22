@@ -11,6 +11,16 @@ from . import utils, serializers as video_serializers, models as video_models
 
 
 class VideoViewSet(viewsets.ViewSet):
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='list-client-keys',
+        permission_classes=[IsAuthenticated],
+    )
+    def list_client_keys(self, request):
+        keys = list(video_models.KeyStorage.objects.filter(client=request.user).values_list('key', flat=True))
+        return Response({"message": keys}, status=status.HTTP_200_OK)
+
     @action(detail=False,
             methods=['GET'],
             url_name='list-numeric-keys',
@@ -159,7 +169,7 @@ class VideoViewSet(viewsets.ViewSet):
 
         created, _ = video_models.AppModel.objects.get_or_create(
             serial_number=validated_data['serial_number'], model_name=validated_data['model_name'],
-            encryptor=validated_data['encryptor']
+            encryptor=validated_data.get('encryptor', False)
         )
 
         serializer = video_serializers.AppRegisteredSerializer(created, many=False)

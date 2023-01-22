@@ -77,6 +77,9 @@ class ApplicationUser:
 
         payload = {
             'user': str(user.id),
+            'username': user.username,
+            'phone': user.phone,
+            'name': f'{user.first_name} {user.last_name}',
             'roles': self.get_user_roles(user),
             'exp': access_token_expiry,
             'iat': time,

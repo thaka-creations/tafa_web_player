@@ -165,7 +165,6 @@ class AuthenticationViewSet(viewsets.ViewSet):
         response = oauth2_user.get_client_details(dt)
 
         if not response:
-            print("not this")
             return Response({"message": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
 
         userinfo = {
