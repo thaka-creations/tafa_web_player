@@ -18,7 +18,10 @@ class VideoViewSet(viewsets.ViewSet):
         permission_classes=[IsAuthenticated],
     )
     def list_client_keys(self, request):
-        keys = list(video_models.KeyStorage.objects.filter(client=request.user).values_list('key', flat=True))
+
+        keys = list(video_models.KeyStorage.objects.filter(
+            client=request.user).exclude(app__id=self.request.query_params.get('request_id')).values_list(
+            'key', flat=True))
         return Response({"message": keys}, status=status.HTTP_200_OK)
 
     @action(detail=False,

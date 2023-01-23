@@ -50,14 +50,18 @@ class ProductContentViewSet(viewsets.ReadOnlyModelViewSet):
 class SearchProductView(APIView):
     def get(self, request):
         param = self.request.GET.get("q")
-        if not param:
-            qs = video_models.Product.objects.all()
+        client = self.request.GET.get('client')
+        if not client:
+            qs = video_models.Product.objects.none()
+        elif not param:
+            qs = video_models.Product.objects.filter(client__id=client)
         else:
             try:
                 int(param)
-                qs = video_models.Product.objects.filter(Q(id=param) | Q(name__icontains=param))
+                qs = video_models.Product.objects.filter(Q(id=param) | Q(name__icontains=param),
+                                                         client__id=client)
             except ValueError:
-                qs = video_models.Product.objects.filter(name__icontains=param)
+                qs = video_models.Product.objects.filter(name__icontains=param, client__id=client)
 
         return JsonResponse({"results": serializers.SearchProductSerializer(qs, many=True).data})
 

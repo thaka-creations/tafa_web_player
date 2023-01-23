@@ -61,6 +61,12 @@
                 url: "/api/v1/datatables/search-product",
                 dataType: 'json',
                 delay: 250,
+                data: function (params) {
+                        return {
+                            q: params.term,
+                            client: '{{request.user.id}}'
+                        }
+                    },
                 processResults: function (data) {
                     return {
                         results: $.map(data, function (item) {
