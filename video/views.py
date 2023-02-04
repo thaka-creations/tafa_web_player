@@ -218,7 +218,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action in ['list', 'create']:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
@@ -237,7 +237,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         validated_data = serializer.validated_data
 
         with transaction.atomic():
-            video_models.Product.objects.create(**validated_data, encryptor=resp)
+            video_models.Product.objects.create(
+                **validated_data, encryptor=resp, client=request.user)
             return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
 
 
