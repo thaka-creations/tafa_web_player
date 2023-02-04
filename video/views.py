@@ -239,7 +239,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         with transaction.atomic():
             video_models.Product.objects.create(
                 **validated_data, encryptor=resp, client=request.user)
-            return Response({"message": "Product created successfully"}, status=status.HTTP_201_CREATED)
+            return Response("Product created successfully", status=status.HTTP_200_OK)
 
 
 class ListProductVideoApiView(APIView):
