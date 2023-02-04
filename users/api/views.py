@@ -6,6 +6,7 @@ from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from users.api import serializers as user_serializers
 from users import models as user_models
 from users import utils as user_utils
@@ -187,6 +188,41 @@ class AuthenticationViewSet(viewsets.ViewSet):
         if not status_code:
             return Response({"message": resp}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": resp}, status=status.HTTP_200_OK)
+
+
+class UserViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ['user_details', 'get_user_details']:
+            return user_serializers.UserProfileSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
+
+    @action(methods=['GET'], detail=False, url_path='user-details')
+    def user_details(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response({"message": serializer.data}, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=False, url_path='get-user-details')
+    def get_user_details(self, request):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({"message": "User id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = user_models.User.objects.get(id=user_id)
+        except user_models.User.DoesNotExist:
+            return Response({"message": "User does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(instance)
+        return Response({"message": serializer.data}, status=status.HTTP_200_OK)
 
 
 

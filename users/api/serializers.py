@@ -71,3 +71,23 @@ class LoginViewSerializer(serializers.Serializer):
     username = serializers.CharField(required=True, trim_whitespace=True)
     password = serializers.CharField(required=True, trim_whitespace=True)
 
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user_id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = user_models.User
+        fields = ['user_id', 'name', 'username', 'phone']
+
+    @staticmethod
+    def get_user_id(obj):
+        return obj.id
+
+    @staticmethod
+    def get_name(obj):
+        try:
+            return "%s %s" % (obj.first_name.title(), obj.last_name.title())
+        except AttributeError:
+            return None
+
