@@ -70,6 +70,7 @@ class VerifyOtpCodeSerializer(ResendOtpCodeSerializer):
 class LoginViewSerializer(serializers.Serializer):
     username = serializers.CharField(required=True, trim_whitespace=True)
     password = serializers.CharField(required=True, trim_whitespace=True)
+    usertype = serializers.CharField(required=False)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

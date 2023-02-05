@@ -149,6 +149,13 @@ class AuthenticationViewSet(viewsets.ViewSet):
             return Response({"message": "Your account has been {}".format(user.account_status.lower())},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        if "usertype" in validated_data.keys():
+            usertype = validated_data['usertype']
+            if usertype == 'staff':
+                if not user.is_staff:
+                    return Response({"message": "Unauthorized. User is not a staff member"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
         try:
             instance = get_application_model().objects.get(user=user)
         except get_application_model().DoesNotExist:
