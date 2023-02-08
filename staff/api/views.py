@@ -95,6 +95,6 @@ class UpdateSerialKeyView(APIView):
 
         if key.status == "REVOKED":
             return JsonResponse({"message": "Key is already revoked"}, status=400)
-        key.__dict__.update(validated_data)
+        key.__dict__.update(validated_data, activated=False)
         key.save()
         return JsonResponse({"message": "Key updated successfully"}, status=200)
