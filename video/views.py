@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.db import transaction
 from rest_framework import viewsets, status
@@ -90,8 +91,7 @@ class VideoViewSet(viewsets.ViewSet):
         methods=['POST'],
         detail=False,
         url_path='activate-key',
-        url_name='activate-key',
-        permission_classes=[IsAuthenticated]
+        url_name='activate-key'
     )
     def activate_key(self, request):
         # key activation
@@ -101,6 +101,19 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
+        username = validated_data['username']
+        password = validated_data['password']
+        user = authenticate(username=username, password=password)
+
+        if not user or user is None:
+            return Response({"message": "Invalid username or password"}, status=status.HTTP_403_FORBIDDEN)
+
+        if not user.phone_verified:
+            return Response({"message": "Phone number not verified"}, status=status.HTTP_403_FORBIDDEN)
+
+        if user.account_status != "ACTIVE":
+            return Response({"message": "Email not verified"}, status=status.HTTP_403_FORBIDDEN)
+
         try:
             instance = video_models.KeyStorage.objects.get(key=validated_data['key'])
         except video_models.KeyStorage.DoesNotExist:
@@ -114,7 +127,7 @@ class VideoViewSet(viewsets.ViewSet):
 
         instance.activated = True
         instance.status = "ACTIVE"
-        instance.client = request.user
+        instance.client = user
         instance.app_id = validated_data['app_id']
         instance.date_activated = timezone.now()
         instance.save()

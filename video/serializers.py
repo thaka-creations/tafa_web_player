@@ -11,6 +11,8 @@ class EncryptDecryptFileSerializer(serializers.Serializer):
 class ActivateKeySerializer(serializers.Serializer):
     key = serializers.CharField(required=True)
     app_id = serializers.UUIDField(required=True)
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
 
 
 class AppRegisteredSerializer(serializers.ModelSerializer):
