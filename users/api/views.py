@@ -180,7 +180,9 @@ class AuthenticationViewSet(viewsets.ViewSet):
             "expires_in": response['expires_in'],
             "token_type": response['token_type'],
             "refresh_token": response['refresh_token'],
-            "jwt_token": oauth2_user.generate_jwt_token(user)
+            "jwt_token": oauth2_user.generate_jwt_token(user),
+            "name": user.first_name + " " + user.last_name,
+            "phone": user.phone,
         }
 
         return Response({"message": userinfo}, status=status.HTTP_200_OK)
