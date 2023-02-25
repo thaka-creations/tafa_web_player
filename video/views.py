@@ -13,14 +13,22 @@ from . import utils, serializers as video_serializers, models as video_models
 
 class VideoViewSet(viewsets.ViewSet):
     @action(
-        methods=['GET'],
+        methods=['POST'],
         detail=False,
-        url_path='list-client-keys',
-        permission_classes=[IsAuthenticated],
+        url_path='list-client-keys'
     )
     def list_client_keys(self, request):
+        payload = request.data
+        username = payload['username']
+        password = payload['JWTAUTH']
+        request_id = payload['request_id']
+
+        # try to authenticate user
+        user = authenticate(username=username, password=password)
+        if not user or user is None:
+            return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
         keys = list(video_models.KeyStorage.objects.filter(
-            client=request.user, status="ACTIVE").exclude(app__id=self.request.query_params.get('request_id')).values_list(
+            client=user, status="ACTIVE").exclude(app__id=request_id).values_list(
             'key', flat=True))
         return Response({"message": keys}, status=status.HTTP_200_OK)
 
