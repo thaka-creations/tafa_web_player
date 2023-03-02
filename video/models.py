@@ -53,6 +53,11 @@ class AppModel(BaseModel):
     def __str__(self):
         return str(self.id)
 
+class AppVersion(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    app_type = models.CharField(max_length=1000, default="player")
+    version = models.CharField(max_length=1000, default="1.0.0")
+
 
 class KeyStorage(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

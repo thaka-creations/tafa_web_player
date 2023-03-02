@@ -242,6 +242,20 @@ class VideoViewSet(viewsets.ViewSet):
 
             return Response({"message": data}, status=status.HTTP_200_OK)
 
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='player-version',
+        url_name='player-version'
+    )
+    def player_version(self, request):
+        qs = video_models.AppVersion.objects.filter(app_type='player').order_by('-created_at')
+        if not qs.exists():
+            return Response({"version": "1.0.0"}, status=status.HTTP_200_OK)
+        instance = qs.first()
+        return Response({"version": instance.version}, status=status.HTTP_200_OK)
+
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = video_models.Product.objects.all()
