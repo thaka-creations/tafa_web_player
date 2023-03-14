@@ -45,6 +45,9 @@
                                 <p class="mb-0"><b>EXPIRY DATE:</b> <span> {{instance.expires_at}}</span></p>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
+                                <p class="mb-0"><b>ALLOW SECOND SCREEN:</b> <span>{{instance.second_screen}}</span></p>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
                                 <p class="mb-0"><b>VALIDITY:</b> <span>{{validity}}</span></p>
                                 <i class="bi bi-pen" data-toggle="tooltip" data-placement="top" title="edit validity"></i>
                             </li>
@@ -242,13 +245,14 @@
 
         $(".submit-key-form").on("click", function(){
             let data = $("#updateKeyForm").serialize();
+            console.log("test", data);
             $.ajax({
                 url: "/api/v1/datatables/update-key/{{instance.key}}",
                 type: "POST",
                 data: data,
                 success: function(response){
-                    $("#updateKeyModal").modal("hide");
-                    displayMessage(response.message, "success", "Success");
+                    {#$("#updateKeyModal").modal("hide");#}
+                    {#displayMessage(response.message, "success", "Success");#}
                 },
                 error: function(response){
                     $("#updateKeyModal").modal("hide");

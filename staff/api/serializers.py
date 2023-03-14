@@ -131,6 +131,7 @@ class UpdateSerialKeyViewSerializer(serializers.Serializer):
     watermark = serializers.CharField(required=False)
     videos = serializers.ListField(required=False)
     status = serializers.CharField(required=False)
+    second_screen = serializers.CharField(required=False)
 
     def validate(self, attrs):
         if "validity" in attrs.keys():

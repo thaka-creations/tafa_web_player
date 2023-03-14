@@ -28,6 +28,7 @@ class KeyDetailSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()
     product_id = serializers.SerializerMethodField()
     videos = serializers.SerializerMethodField()
+    watermark = serializers.SerializerMethodField()
 
     class Meta:
         model = KeyStorage
@@ -58,6 +59,19 @@ class KeyDetailSerializer(serializers.ModelSerializer):
             return "all"
         return list(obj.videos.values_list('id', flat=True))
 
+    @staticmethod
+    def get_watermark(obj):
+        watermark = obj.watermark
+        if watermark == "Phone Number":
+            return obj.client.phone
+        elif watermark == "Username":
+            return obj.client.username
+        elif watermark == "Name":
+            return obj.client.first_name + " " + obj.client.last_name
+        elif watermark == "Serial Key":
+            return obj.key
+        else:
+            return obj.client.phone
 
 class ProductSerializer(serializers.ModelSerializer):
     encryption_key = serializers.SerializerMethodField()
@@ -89,8 +103,8 @@ class NumericKeyGenSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(required=True, min_value=1, max_value=1000)
     product = serializers.IntegerField(required=True)
     validity = serializers.ChoiceField(choices=validity_choices, required=True)
-    watermark = serializers.CharField(allow_blank=True, allow_null=True, required=True)
-    second_screen = serializers.BooleanField(default=True)
+    watermark = serializers.CharField(required=True)
+    second_screen = serializers.BooleanField(required=True)
     videos = serializers.ListField(child=serializers.CharField(), required=True)
     user = serializers.UUIDField(required=True)
 

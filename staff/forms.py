@@ -22,10 +22,10 @@ class EditKeyForm(forms.Form):
         choices=validity_choices,
         required=False,
         widget=forms.Select(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
-    watermark = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
+    watermark = forms.ChoiceField(
+        choices=[('Phone Number', 'Phone Number'), ('Serial Key', 'Serial Key'), ('Username', 'Username'),
+                 ('Name', 'Name')], required=True,
+        widget=forms.Select(attrs={'class': 'form-control watermark-select shadow-none rounded-0 mb-2'}))
     videos = forms.MultipleChoiceField(
         label='Access Status',
         required=False,
@@ -36,6 +36,9 @@ class EditKeyForm(forms.Form):
         choices=STATUS_CHOICES,
         required=False,
         widget=forms.Select(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
+    second_screen = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0 mt-3 mb-2'}))
 
 
 class GenerateKeyForm(forms.Form):
@@ -52,16 +55,21 @@ class GenerateKeyForm(forms.Form):
         choices=validity_choices,
         required=True,
         widget=forms.Select(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
-    watermark = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control shadow-none rounded-0 mb-2'}))
+    watermark = forms.ChoiceField(
+       choices=[('Phone Number', 'Phone Number'), ('Serial Key', 'Serial Key'), ('Username', 'Username'),
+                ('Name', 'Name')], required=True,
+        widget=forms.Select(attrs={'class': 'form-control watermark-select shadow-none rounded-0 mb-2'}))
     videos = forms.MultipleChoiceField(
         label='Access Status',
         required=False,
         choices=[('all', 'All Videos')],
         initial='all',
         widget=forms.SelectMultiple(attrs={'class': 'form-control shadow-none rounded-0 mb-2 videos-selector'}))
+    second_screen = forms.BooleanField(
+        label='Allow Second Screen',
+        required=True,
+        widget=forms.CheckboxInput(attrs={'class': 'shadow-none rounded-0 mt-3 mb-2',
+                                          'checked': 'checked'}))
 
 
 class CreateProductForm(forms.ModelForm):

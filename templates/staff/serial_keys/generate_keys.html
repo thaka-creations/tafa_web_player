@@ -7,6 +7,10 @@
     .h5{
         color: #5968B0!important;
     }
+    input[type=checkbox] {
+        background-color: #0d6efd!important;
+        border-color: #0d6efd!important;
+    }
 </style>
 {% endblock %}
 
@@ -37,7 +41,7 @@
 
                     {{form}}
                     <input type="hidden" name="user" value="{{request.user.id}}">
-                    <button class="btn btn-primary rounded-0 shadow-none mt-3" type="submit">
+                    <button class="d-block btn btn-primary rounded-0 shadow-none mt-3" type="submit">
                         Generate
                     </button>
 
